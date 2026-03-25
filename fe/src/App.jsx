@@ -48,7 +48,7 @@ const FEATURES = [
 ];
 
 function LoginPage() {
-  const doSignIn = () => signIn.social({ provider: "google" });
+  const doSignIn = () => signIn.social({ provider: "google", callbackURL: window.location.origin });
 
   return (
     <div className="min-h-screen bg-black relative overflow-hidden">
