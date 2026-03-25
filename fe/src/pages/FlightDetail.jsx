@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
+import StatusBadge from "../components/StatusBadge";
 import {
   Plane,
   ArrowLeft,
@@ -14,25 +15,6 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api";
 import { format } from "date-fns";
-
-function StatusBadge({ status }) {
-  const config = {
-    Scheduled: { bg: "bg-white/[0.06]", text: "text-muted-foreground", glow: "" },
-    Boarding: { bg: "bg-blue-500/10", text: "text-blue-400", glow: "glow-blue" },
-    Departed: { bg: "bg-blue-500/10", text: "text-blue-400", glow: "glow-blue" },
-    InAir: { bg: "bg-blue-500/10", text: "text-blue-400", glow: "glow-blue animate-pulse-glow" },
-    Landed: { bg: "bg-green-500/10", text: "text-green-400", glow: "glow-green" },
-    Arrived: { bg: "bg-green-500/10", text: "text-green-400", glow: "glow-green" },
-    Cancelled: { bg: "bg-red-500/10", text: "text-red-400", glow: "glow-red" },
-    Diverted: { bg: "bg-amber-500/10", text: "text-amber-400", glow: "glow-amber" },
-  };
-  const c = config[status] || config.Scheduled;
-  return (
-    <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${c.bg} ${c.text} ${c.glow}`}>
-      {status === "InAir" ? "In Air" : status}
-    </span>
-  );
-}
 
 function TimelineStep({ label, scheduled, actual, isCompleted, isCurrent }) {
   function fmtTime(iso) {

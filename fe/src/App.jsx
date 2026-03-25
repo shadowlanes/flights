@@ -1,6 +1,7 @@
 import { Routes, Route, Link, NavLink, useNavigate } from "react-router";
 import { useSession, signIn, signOut } from "./lib/auth-client";
 import { Plane, Plus, LogOut, LayoutDashboard, Archive } from "lucide-react";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import AddFlight from "./pages/AddFlight";
 import FlightDetail from "./pages/FlightDetail";
@@ -206,12 +207,14 @@ function AppShell() {
       {/* Page content */}
       <main className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="animate-fade-up">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/flights/add" element={<AddFlight />} />
-            <Route path="/flights/:id" element={<FlightDetail />} />
-            <Route path="/archive" element={<ArchivePage />} />
-          </Routes>
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/flights/add" element={<AddFlight />} />
+              <Route path="/flights/:id" element={<FlightDetail />} />
+              <Route path="/archive" element={<ArchivePage />} />
+            </Routes>
+          </ErrorBoundary>
         </div>
       </main>
     </div>
