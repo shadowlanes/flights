@@ -18,6 +18,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   flights       Flight[]
+  stats         UserStats?
 
   @@unique([email])
   @@map("user")
@@ -140,4 +141,19 @@ model Flight {
   @@index([userId, isArchived])
   @@index([status])
   @@map("flight")
+}
+
+model UserStats {
+  userId           String   @id
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalFlights     Int      @default(0)
+  totalDistanceKm  Int      @default(0)
+  totalDurationMin Int      @default(0)
+  uniqueAirlines   Int      @default(0)
+  uniqueAirports   Int      @default(0)
+  uniqueCountries  Int      @default(0)
+  uniqueContinents Int      @default(0)
+  updatedAt        DateTime @updatedAt
+
+  @@map("user_stats")
 }
