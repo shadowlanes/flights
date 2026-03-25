@@ -8,76 +8,39 @@ import {
   RefreshCw,
   Trash2,
   Clock,
-  ArrowRight,
   AlertCircle,
   MapPin,
   Armchair,
   Loader2,
+  X,
 } from "lucide-react";
 import { api } from "../lib/api";
+import {
+  formatTime,
+  formatRelativeTime,
+  formatDelayStatus,
+  formatDuration,
+  computeDistanceKm,
+} from "../lib/time";
 import { format } from "date-fns";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-function TimelineStep({ label, scheduled, actual, displayValue, isCompleted, isCurrent }) {
-  function fmtTime(iso) {
-    if (!iso) return "--:--";
-    try {
-      return new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    } catch {
-      return "--:--";
-    }
-  }
-
-  return (
-    <div className="flex items-start gap-3">
-      <div className="flex flex-col items-center mt-1">
-        <div
-          className={`w-3 h-3 rounded-full border-2 transition-all duration-500 ${
-            isCurrent
-              ? "border-blue-400 bg-blue-400/30 glow-blue"
-              : isCompleted
-              ? "border-emerald-400 bg-emerald-400/30"
-              : "border-white/20 bg-transparent"
-          }`}
-        />
-        <div className="w-px h-8 bg-white/[0.06]" />
-      </div>
-      <div className="pb-5 -mt-0.5">
-        <div className="label-caps mb-1">{label}</div>
-        <div className="flex items-center gap-3">
-          <span className="heading-sm">
-            {displayValue || fmtTime(actual || scheduled)}
-          </span>
-          {!displayValue && actual && scheduled && actual !== scheduled && (
-            <span className="text-[11px] text-muted-foreground/40 line-through">
-              {fmtTime(scheduled)}
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function RouteMap({ departure, arrival }) {
   if (!departure?.latitude || !arrival?.latitude) return null;
-
   const from = [departure.latitude, departure.longitude];
   const to = [arrival.latitude, arrival.longitude];
-
   const latPad = Math.abs(from[0] - to[0]) * 0.3 + 2;
   const lonPad = Math.abs(from[1] - to[1]) * 0.3 + 2;
   const bounds = [
     [Math.min(from[0], to[0]) - latPad, Math.min(from[1], to[1]) - lonPad],
     [Math.max(from[0], to[0]) + latPad, Math.max(from[1], to[1]) + lonPad],
   ];
-
   return (
-    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 220 }}>
+    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 200 }}>
       <MapContainer
         bounds={bounds}
-        style={{ height: "100%", width: "100%", background: "hsl(225, 25%, 6%)" }}
+        style={{ height: "100%", width: "100%", background: "#000" }}
         zoomControl={false}
         attributionControl={false}
         dragging={false}
@@ -91,29 +54,93 @@ function RouteMap({ departure, arrival }) {
         />
         <Polyline
           positions={[from, to]}
-          pathOptions={{
-            color: "rgba(59, 130, 246, 0.5)",
-            weight: 2,
-            dashArray: "6 8",
-          }}
+          pathOptions={{ color: "rgba(59,130,246,0.6)", weight: 2, dashArray: "6 8" }}
         />
-        {[
-          { pos: from, label: departure.iataCode },
-          { pos: to, label: arrival.iataCode },
-        ].map((apt) => (
+        {[from, to].map((pos, i) => (
           <CircleMarker
-            key={apt.label}
-            center={apt.pos}
-            radius={5}
+            key={i}
+            center={pos}
+            radius={4}
             pathOptions={{
-              fillColor: "rgba(59, 130, 246, 0.8)",
+              fillColor: "rgba(59,130,246,0.9)",
               fillOpacity: 1,
-              color: "rgba(59, 130, 246, 0.3)",
-              weight: 8,
+              color: "rgba(59,130,246,0.3)",
+              weight: 6,
             }}
           />
         ))}
       </MapContainer>
+    </div>
+  );
+}
+
+function AirportBlock({ airport, code, scheduledTime, actualTime, delayMinutes, gate, terminal, isTop }) {
+  const delay = formatDelayStatus(scheduledTime, actualTime, delayMinutes);
+  const displayTime = actualTime || scheduledTime;
+  const relTime = formatRelativeTime(displayTime);
+  const showStrikethrough = actualTime && scheduledTime && actualTime !== scheduledTime;
+
+  return (
+    <div className="flex gap-4">
+      {/* Dot + line */}
+      <div className="flex flex-col items-center pt-2">
+        <div className="route-dot route-dot-dep" />
+        {isTop && <div className="route-line flex-1 mt-1 min-h-6" />}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 pb-2">
+        <div className="flex items-baseline justify-between gap-4">
+          {/* Airport code */}
+          <div className="code-display text-3xl tracking-tight">
+            {code}
+          </div>
+
+          {/* Time display */}
+          <div className="text-right">
+            <span className={`code-display text-2xl ${delay.color === "red" ? "text-late" : delay.color === "green" ? "text-on-time" : ""}`}>
+              {formatTime(displayTime)}
+            </span>
+            {showStrikethrough && (
+              <span className="block text-xs text-muted-foreground/40 line-through">
+                {formatTime(scheduledTime)}
+              </span>
+            )}
+            {delayMinutes > 0 && (
+              <span className="block text-xs text-late mt-0.5">
+                {delayMinutes}m late
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Airport name */}
+        <div className="text-sm text-muted-foreground mt-1">
+          {airport?.name || code}
+        </div>
+
+        {/* Terminal + Gate */}
+        <div className="flex items-center gap-2 mt-1.5">
+          {terminal && (
+            <span className="text-xs text-muted-foreground/60">
+              Terminal {terminal}
+            </span>
+          )}
+          {terminal && gate && (
+            <span className="text-muted-foreground/20">·</span>
+          )}
+          {gate && (
+            <span className="gate-badge text-xs">Gate {gate}</span>
+          )}
+        </div>
+
+        {/* Relative time */}
+        {relTime && (
+          <div className="text-xs text-muted-foreground/50 mt-1">
+            {relTime}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -173,21 +200,25 @@ export default function FlightDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="card-flat rounded-2xl p-8 space-y-6">
+      <div className="max-w-lg mx-auto space-y-6 animate-fade-up">
+        <div className="card-flat rounded-2xl p-6 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="skeleton w-12 h-12 rounded-xl" />
-            <div className="space-y-2">
-              <div className="skeleton h-5 w-24" />
+            <div className="skeleton w-10 h-10 rounded-xl" />
+            <div className="space-y-2 flex-1">
+              <div className="skeleton h-4 w-48" />
               <div className="skeleton h-3 w-32" />
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="skeleton h-12 w-16" />
-            <div className="flex-1 h-px bg-white/[0.04]" />
-            <div className="skeleton h-12 w-16" />
+          <div className="skeleton h-10 w-full rounded-lg" />
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="skeleton w-2 h-24 rounded" />
+              <div className="flex-1 space-y-2">
+                <div className="skeleton h-8 w-20" />
+                <div className="skeleton h-4 w-40" />
+              </div>
+            </div>
           </div>
-          <div className="skeleton h-[220px] w-full rounded-2xl" />
         </div>
       </div>
     );
@@ -195,7 +226,7 @@ export default function FlightDetail() {
 
   if (error && !flight) {
     return (
-      <div className="max-w-2xl mx-auto card-flat rounded-2xl p-8 text-center">
+      <div className="max-w-lg mx-auto card-flat rounded-2xl p-8 text-center">
         <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" strokeWidth={1.5} />
         <p className="text-sm text-red-300">{error}</p>
       </div>
@@ -206,149 +237,138 @@ export default function FlightDetail() {
 
   const dep = flight.departure;
   const arr = flight.arrival;
-  const isActive = ["Boarding", "Departed", "InAir"].includes(flight.status);
-  const isComplete = ["Landed", "Arrived"].includes(flight.status);
+  const duration = formatDuration(flight.scheduledDeparture, flight.scheduledArrival);
+  const distKm = computeDistanceKm(dep, arr);
+  const dateStr = format(new Date(flight.date), "EEE, d MMM").toUpperCase();
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      {/* Back button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="btn-glass px-3 py-1.5 text-sm"
-      >
-        <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
-        Back
-      </button>
-
-      {/* Main card */}
-      <div className="card-flat rounded-2xl p-6 sm:p-8 space-y-6 animate-fade-up">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <AirlineLogo code={flight.airlineCode} size="lg" />
+    <div className="max-w-lg mx-auto space-y-4 animate-fade-up">
+      {/* Header */}
+      <div className="card-flat rounded-2xl p-5">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <AirlineLogo code={flight.airlineCode} size="md" />
             <div>
-              <div className="heading-xl">{flight.flightNumber}</div>
-              <div className="text-sm text-muted-foreground">
-                {flight.airline?.name || flight.airlineCode}
-                {" \u00B7 "}
-                {format(new Date(flight.date), "MMM d, yyyy")}
+              <div className="label-caps">
+                {dateStr} {"\u00B7"} {flight.flightNumber}
+              </div>
+              <div className="heading-lg mt-0.5">
+                {dep?.city || flight.departureCode} to {arr?.city || flight.arrivalCode}
               </div>
             </div>
           </div>
-          <StatusBadge status={flight.status} />
+          <button
+            onClick={() => navigate(-1)}
+            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition-all cursor-pointer"
+          >
+            <X className="w-5 h-5" strokeWidth={1.5} />
+          </button>
         </div>
 
-        {/* Route */}
-        <div className="flex items-center gap-4 py-4">
-          <div className="flex-1">
-            <div className="code-display text-3xl">{flight.departureCode}</div>
-            <div className="text-sm text-muted-foreground mt-1">{dep?.city || ""}</div>
-            <div className="text-xs text-muted-foreground/50">{dep?.name || ""}</div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-1 justify-center">
-            <div className="h-px flex-1 bg-gradient-to-r from-blue-400/20 to-transparent" />
-            <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
-              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40" strokeWidth={1.5} />
-            </div>
-            <div className="h-px flex-1 bg-gradient-to-l from-blue-400/20 to-transparent" />
-          </div>
-
-          <div className="flex-1 text-right">
-            <div className="code-display text-3xl">{flight.arrivalCode}</div>
-            <div className="text-sm text-muted-foreground mt-1">{arr?.city || ""}</div>
-            <div className="text-xs text-muted-foreground/50">{arr?.name || ""}</div>
-          </div>
-        </div>
-
-        {/* Route map */}
-        <RouteMap departure={dep} arrival={arr} />
-
-        {/* Delay banner */}
-        {flight.delayMinutes > 0 && (
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/[0.06] border border-amber-400/[0.1] text-sm text-amber-300">
-            <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
-            Delayed by {flight.delayMinutes} minutes
-          </div>
-        )}
-
-        {/* Timeline */}
-        <div className="pt-2">
-          <div className="label-caps mb-4">Timeline</div>
-          <TimelineStep
-            label="Departure"
-            scheduled={flight.scheduledDeparture}
-            actual={flight.actualDeparture}
-            isCompleted={!!flight.actualDeparture || isActive || isComplete}
-            isCurrent={flight.status === "Boarding" || flight.status === "Departed"}
-          />
-          <TimelineStep
-            label="In Flight"
-            scheduled={null}
-            actual={null}
-            displayValue={(() => {
-              if (!flight.scheduledDeparture || !flight.scheduledArrival) return null;
-              const diff = new Date(flight.scheduledArrival) - new Date(flight.scheduledDeparture);
-              const hrs = Math.floor(diff / 3600000);
-              const mins = Math.floor((diff % 3600000) / 60000);
-              return `${hrs}h ${mins}m`;
-            })()}
-            isCompleted={isComplete}
-            isCurrent={flight.status === "InAir"}
-          />
-          <TimelineStep
-            label="Arrival"
-            scheduled={flight.scheduledArrival}
-            actual={flight.actualArrival}
-            isCompleted={isComplete}
-            isCurrent={false}
-          />
-        </div>
-
-        {/* Info grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-          {flight.aircraftType && (
-            <InfoItem icon={Plane} label="Aircraft" value={flight.aircraftType} />
-          )}
-          {flight.seatNumber && (
-            <InfoItem icon={Armchair} label="Seat" value={flight.seatNumber} />
-          )}
-          {flight.departureGate && (
-            <InfoItem icon={MapPin} label="Dep. Gate" value={`${flight.departureTerminal ? `T${flight.departureTerminal} / ` : ""}G${flight.departureGate}`} />
-          )}
-          {flight.arrivalGate && (
-            <InfoItem icon={MapPin} label="Arr. Gate" value={`${flight.arrivalTerminal ? `T${flight.arrivalTerminal} / ` : ""}G${flight.arrivalGate}`} />
-          )}
-          {flight.scheduledDeparture && (
-            <InfoItem
-              icon={Clock}
-              label="Duration"
-              value={(() => {
-                if (!flight.scheduledDeparture || !flight.scheduledArrival) return "--";
-                const diff = new Date(flight.scheduledArrival) - new Date(flight.scheduledDeparture);
-                const hrs = Math.floor(diff / 3600000);
-                const mins = Math.floor((diff % 3600000) / 60000);
-                return `${hrs}h ${mins}m`;
-              })()}
-            />
-          )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center gap-3 pt-2">
-          <button onClick={handleRefresh} disabled={refreshing} className="btn-glass">
-            {refreshing ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin-smooth" strokeWidth={1.5} />
-            ) : (
-              <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.5} />
+        {/* Status banner */}
+        <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06]">
+          <div className="flex items-center gap-2">
+            <StatusBadge status={flight.status} />
+            {flight.status !== "Cancelled" && duration && (
+              <span className="text-sm text-muted-foreground">
+                {flight.isArchived
+                  ? duration
+                  : formatRelativeTime(flight.scheduledDeparture)}
+              </span>
             )}
-            {refreshing ? "Refreshing..." : "Refresh Status"}
-          </button>
-          <button onClick={handleDelete} disabled={deleting} className="btn-glass btn-danger">
-            <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
-            {deleting ? "Removing..." : "Remove"}
-          </button>
+          </div>
+          {flight.departureGate && (
+            <span className="gate-badge">
+              {"\u2708"} {flight.departureGate}
+            </span>
+          )}
         </div>
+      </div>
+
+      {/* Route card — vertical layout */}
+      <div className="card-flat rounded-2xl p-5">
+        {/* Departure */}
+        <AirportBlock
+          airport={dep}
+          code={flight.departureCode}
+          scheduledTime={flight.scheduledDeparture}
+          actualTime={flight.actualDeparture}
+          delayMinutes={flight.delayMinutes}
+          gate={flight.departureGate}
+          terminal={flight.departureTerminal}
+          isTop={true}
+        />
+
+        {/* Route summary */}
+        <div className="flex gap-4">
+          <div className="flex flex-col items-center">
+            <div className="route-line flex-1 min-h-4" />
+          </div>
+          <div className="py-3 flex-1">
+            <div className="text-xs text-muted-foreground/40">
+              {[
+                duration ? `Total ${duration}` : null,
+                distKm ? `${distKm.toLocaleString()} km` : null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </div>
+          </div>
+        </div>
+
+        {/* Arrival */}
+        <AirportBlock
+          airport={arr}
+          code={flight.arrivalCode}
+          scheduledTime={flight.scheduledArrival}
+          actualTime={flight.actualArrival}
+          delayMinutes={null}
+          gate={flight.arrivalGate}
+          terminal={flight.arrivalTerminal}
+          isTop={false}
+        />
+      </div>
+
+      {/* Delay banner */}
+      {flight.delayMinutes > 0 && (
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/[0.06] border border-red-400/[0.1] text-sm text-late">
+          <AlertCircle className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+          Delayed by {flight.delayMinutes} minutes
+        </div>
+      )}
+
+      {/* Route map */}
+      <RouteMap departure={dep} arrival={arr} />
+
+      {/* Info grid */}
+      {(flight.aircraftType || flight.seatNumber) && (
+        <div className="card-flat rounded-2xl p-5">
+          <div className="label-caps mb-3">Flight Info</div>
+          <div className="grid grid-cols-2 gap-3">
+            {flight.aircraftType && (
+              <InfoItem icon={Plane} label="Aircraft" value={flight.aircraftType} />
+            )}
+            {flight.seatNumber && (
+              <InfoItem icon={Armchair} label="Seat" value={flight.seatNumber} />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="flex items-center gap-3 pb-4">
+        <button onClick={handleRefresh} disabled={refreshing} className="btn-glass flex-1">
+          {refreshing ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin-smooth" strokeWidth={1.5} />
+          ) : (
+            <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.5} />
+          )}
+          {refreshing ? "Refreshing..." : "Refresh"}
+        </button>
+        <button onClick={handleDelete} disabled={deleting} className="btn-glass btn-danger flex-1">
+          <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
+          {deleting ? "Removing..." : "Remove"}
+        </button>
       </div>
     </div>
   );
@@ -356,7 +376,7 @@ export default function FlightDetail() {
 
 function InfoItem({ icon: Icon, label, value }) {
   return (
-    <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] transition-all duration-200 hover:bg-white/[0.05] hover:border-white/[0.08]">
+    <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="w-3 h-3 text-muted-foreground/40" strokeWidth={1.5} />
         <span className="label-caps">{label}</span>
