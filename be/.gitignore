@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build
+dist/
+
+# Environment
+.env
+.env.local
+
+# Logs
+npm-debug.log*
+
+# Prisma
+/prisma/*.db
+/prisma/*.db-journal
