@@ -1,8 +1,9 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Clock } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import AirlineLogo from "./AirlineLogo";
-import { formatTime, formatDelayStatus } from "../lib/time";
+import { formatTime, formatDelayStatus, formatRelativeTime } from "../lib/time";
 import { format } from "date-fns";
 
 export default function FlightCard({ flight, index = 0 }) {
@@ -13,6 +14,24 @@ export default function FlightCard({ flight, index = 0 }) {
     flight.actualDeparture,
     flight.delayMinutes
   );
+
+  // Live countdown that updates every minute
+  const [countdown, setCountdown] = useState(() =>
+    formatRelativeTime(flight.scheduledDeparture)
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCountdown(formatRelativeTime(flight.scheduledDeparture));
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [flight.scheduledDeparture]);
+
+  // Determine countdown color
+  const isImminent =
+    flight.scheduledDeparture &&
+    new Date(flight.scheduledDeparture).getTime() - Date.now() < 60 * 60 * 1000 &&
+    new Date(flight.scheduledDeparture).getTime() > Date.now();
 
   return (
     <Link
@@ -56,16 +75,23 @@ export default function FlightCard({ flight, index = 0 }) {
         </span>
       </div>
 
-      {/* Date row */}
-      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/40 mt-2">
-        <Clock className="w-3 h-3" strokeWidth={1.5} />
-        {format(new Date(flight.date), "EEE, d MMM yyyy")}
-        {flight.departureGate && (
-          <>
-            <span className="text-muted-foreground/20">·</span>
-            <span>Gate {flight.departureGate}</span>
-          </>
+      {/* Countdown + date row */}
+      <div className="flex items-center justify-between mt-2.5">
+        {countdown && (
+          <span className={`text-xs font-medium ${isImminent ? "text-on-time" : "text-muted-foreground/50"}`}>
+            {countdown}
+          </span>
         )}
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/40">
+          <Clock className="w-3 h-3" strokeWidth={1.5} />
+          {format(new Date(flight.date), "EEE, d MMM")}
+          {flight.departureGate && (
+            <>
+              <span className="text-muted-foreground/20">·</span>
+              <span>Gate {flight.departureGate}</span>
+            </>
+          )}
+        </div>
       </div>
     </Link>
   );
