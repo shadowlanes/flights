@@ -46,7 +46,7 @@ function FlightListItem({ flight }) {
           {format(new Date(flight.date), "MMM d, yyyy")}
           {flight.airline?.name && (
             <>
-              <span className="text-muted-foreground/20">\u00B7</span>
+              <span className="text-muted-foreground/20">{"\u00B7"}</span>
               {flight.airline.name}
             </>
           )}
