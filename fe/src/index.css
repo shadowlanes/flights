@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 @plugin "tailwindcss-animate";
 
 @theme {
@@ -36,26 +37,26 @@
 
 @layer base {
     :root {
-        --background: 222 47% 11%;
-        --foreground: 210 40% 98%;
-        --card: 222 47% 11%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222 47% 11%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217 91% 60%;
-        --primary-foreground: 222 47% 11%;
-        --secondary: 217 33% 17%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 223 47% 16%;
-        --muted-foreground: 215 20% 65%;
-        --accent: 217 33% 17%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217 33% 17%;
-        --input: 217 33% 17%;
-        --ring: 224 71% 4%;
-        --radius: 0.5rem;
+        --background: 225 25% 6%;
+        --foreground: 210 40% 96%;
+        --card: 225 20% 10%;
+        --card-foreground: 210 40% 96%;
+        --popover: 225 20% 10%;
+        --popover-foreground: 210 40% 96%;
+        --primary: 210 100% 62%;
+        --primary-foreground: 225 25% 4%;
+        --secondary: 220 20% 14%;
+        --secondary-foreground: 210 40% 96%;
+        --muted: 220 16% 16%;
+        --muted-foreground: 215 16% 56%;
+        --accent: 220 20% 14%;
+        --accent-foreground: 210 40% 96%;
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 210 40% 96%;
+        --border: 220 14% 18%;
+        --input: 220 14% 18%;
+        --ring: 210 100% 62%;
+        --radius: 0.75rem;
     }
 }
 
@@ -65,7 +66,137 @@
     }
 
     body {
-        @apply bg-background text-foreground;
-        font-family: 'Inter', sans-serif;
+        @apply bg-background text-foreground antialiased;
+        font-family: 'DM Sans', sans-serif;
     }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Outfit', sans-serif;
+    }
+}
+
+/* Liquid glass panel */
+.glass {
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.02) 50%,
+        rgba(255, 255, 255, 0.04) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 0 0 0.5px rgba(255, 255, 255, 0.04) inset,
+        0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Glass card with subtle top highlight */
+.glass-card {
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.06) 0%,
+        rgba(255, 255, 255, 0.015) 100%
+    );
+    backdrop-filter: blur(20px) saturate(1.3);
+    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow:
+        0 0 0 0.5px rgba(255, 255, 255, 0.03) inset,
+        0 0 40px rgba(0, 0, 0, 0.15),
+        0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
+        0 0 40px rgba(0, 0, 0, 0.15),
+        0 8px 32px rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Atmospheric background */
+.atmosphere {
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(56, 117, 224, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 10%, rgba(99, 68, 202, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 50% 100%, rgba(20, 50, 100, 0.08) 0%, transparent 60%),
+        hsl(225, 25%, 6%);
+}
+
+/* Glowing status indicators */
+.glow-blue {
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+.glow-green {
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.15);
+}
+
+.glow-amber {
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.5), 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+.glow-red {
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.5), 0 0 20px rgba(239, 68, 68, 0.15);
+}
+
+/* Pulse animation for in-air flights */
+@keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+/* Subtle grain texture overlay */
+.grain::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.015;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    z-index: 9999;
+}
+
+/* Smooth page transitions */
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-up {
+    animation: fade-up 0.4s ease-out forwards;
+}
+
+/* Navigation link active indicator */
+.nav-active {
+    position: relative;
+}
+
+.nav-active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 2px;
+    border-radius: 1px;
+    background: hsl(210, 100%, 62%);
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
 }
