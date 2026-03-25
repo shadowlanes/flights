@@ -17,4 +17,4 @@ RUN npm run build
 
 EXPOSE 3001
 
-CMD npm run migrate && npm start
+CMD npm run migrate && npx prisma db seed || true && npm start
