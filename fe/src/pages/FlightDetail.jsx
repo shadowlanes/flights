@@ -15,8 +15,10 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api";
 import { format } from "date-fns";
+import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 
-function TimelineStep({ label, scheduled, actual, isCompleted, isCurrent }) {
+function TimelineStep({ label, scheduled, actual, displayValue, isCompleted, isCurrent }) {
   function fmtTime(iso) {
     if (!iso) return "--:--";
     try {
@@ -46,15 +48,77 @@ function TimelineStep({ label, scheduled, actual, isCompleted, isCurrent }) {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium">
-            {fmtTime(actual || scheduled)}
+            {displayValue || fmtTime(actual || scheduled)}
           </span>
-          {actual && scheduled && actual !== scheduled && (
+          {!displayValue && actual && scheduled && actual !== scheduled && (
             <span className="text-[11px] text-muted-foreground/40 line-through">
               {fmtTime(scheduled)}
             </span>
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function RouteMap({ departure, arrival }) {
+  if (!departure?.latitude || !arrival?.latitude) return null;
+
+  const from = [departure.latitude, departure.longitude];
+  const to = [arrival.latitude, arrival.longitude];
+
+  const midLat = (from[0] + to[0]) / 2;
+  const midLon = (from[1] + to[1]) / 2;
+
+  // Compute bounds with padding
+  const latPad = Math.abs(from[0] - to[0]) * 0.3 + 2;
+  const lonPad = Math.abs(from[1] - to[1]) * 0.3 + 2;
+  const bounds = [
+    [Math.min(from[0], to[0]) - latPad, Math.min(from[1], to[1]) - lonPad],
+    [Math.max(from[0], to[0]) + latPad, Math.max(from[1], to[1]) + lonPad],
+  ];
+
+  return (
+    <div className="glass-card rounded-2xl overflow-hidden" style={{ height: 220 }}>
+      <MapContainer
+        bounds={bounds}
+        style={{ height: "100%", width: "100%", background: "hsl(225, 25%, 6%)" }}
+        zoomControl={false}
+        attributionControl={false}
+        dragging={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          opacity={0.5}
+        />
+        <Polyline
+          positions={[from, to]}
+          pathOptions={{
+            color: "rgba(59, 130, 246, 0.5)",
+            weight: 2,
+            dashArray: "6 8",
+          }}
+        />
+        {[
+          { pos: from, label: departure.iataCode },
+          { pos: to, label: arrival.iataCode },
+        ].map((apt) => (
+          <CircleMarker
+            key={apt.label}
+            center={apt.pos}
+            radius={5}
+            pathOptions={{
+              fillColor: "rgba(59, 130, 246, 0.8)",
+              fillOpacity: 1,
+              color: "rgba(59, 130, 246, 0.3)",
+              weight: 8,
+            }}
+          />
+        ))}
+      </MapContainer>
     </div>
   );
 }
@@ -219,6 +283,9 @@ export default function FlightDetail() {
           </div>
         </div>
 
+        {/* Route map */}
+        <RouteMap departure={dep} arrival={arr} />
+
         {/* Delay banner */}
         {flight.delayMinutes > 0 && (
           <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/[0.06] border border-amber-400/[0.1] text-sm text-amber-300">
@@ -243,6 +310,13 @@ export default function FlightDetail() {
             label="In Flight"
             scheduled={null}
             actual={null}
+            displayValue={(() => {
+              if (!flight.scheduledDeparture || !flight.scheduledArrival) return null;
+              const diff = new Date(flight.scheduledArrival) - new Date(flight.scheduledDeparture);
+              const hrs = Math.floor(diff / 3600000);
+              const mins = Math.floor((diff % 3600000) / 60000);
+              return `${hrs}h ${mins}m`;
+            })()}
             isCompleted={isComplete}
             isCurrent={flight.status === "InAir"}
           />
