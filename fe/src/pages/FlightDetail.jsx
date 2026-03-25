@@ -358,14 +358,16 @@ export default function FlightDetail() {
 
       {/* Actions */}
       <div className="flex items-center gap-3 pb-4">
-        <button onClick={handleRefresh} disabled={refreshing} className="btn-glass flex-1">
-          {refreshing ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin-smooth" strokeWidth={1.5} />
-          ) : (
-            <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.5} />
-          )}
-          {refreshing ? "Refreshing..." : "Refresh"}
-        </button>
+        {!flight.isArchived && (
+          <button onClick={handleRefresh} disabled={refreshing} className="btn-glass flex-1">
+            {refreshing ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin-smooth" strokeWidth={1.5} />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.5} />
+            )}
+            {refreshing ? "Refreshing..." : "Refresh"}
+          </button>
+        )}
         <button onClick={handleDelete} disabled={deleting} className="btn-glass btn-danger flex-1">
           <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
           {deleting ? "Removing..." : "Remove"}
