@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { api } from "../lib/api";
+import AirlineLogo from "../components/AirlineLogo";
 import { format } from "date-fns";
 import { MapContainer, TileLayer, Polyline, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -20,9 +21,7 @@ function FlightListItem({ flight }) {
       to={`/flights/${flight.id}`}
       className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] transition-all duration-200 group"
     >
-      <div className="w-8 h-8 rounded-lg bg-white/[0.03] border border-white/[0.05] flex items-center justify-center shrink-0">
-        <Plane className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.5} />
-      </div>
+      <AirlineLogo code={flight.airlineCode} size="sm" />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">

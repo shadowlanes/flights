@@ -1,6 +1,7 @@
 import { Link } from "react-router";
-import { Plane, ArrowRight, Clock, AlertCircle } from "lucide-react";
+import { ArrowRight, Clock, AlertCircle } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import AirlineLogo from "./AirlineLogo";
 import { format } from "date-fns";
 
 function formatTime(isoStr) {
@@ -27,9 +28,7 @@ export default function FlightCard({ flight }) {
       {/* Top row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-            <Plane className="w-4 h-4 text-blue-400" strokeWidth={1.5} />
-          </div>
+          <AirlineLogo code={flight.airlineCode} size="sm" />
           <div>
             <div
               className="font-semibold"

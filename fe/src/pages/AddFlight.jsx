@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Search, Plane, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import AirlineLogo from "../components/AirlineLogo";
 import { api } from "../lib/api";
 import { format } from "date-fns";
 
@@ -159,9 +160,7 @@ export default function AddFlight() {
               {/* Route header */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-                    <Plane className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
-                  </div>
+                  <AirlineLogo code={flight.airlineCode} size="md" />
                   <div>
                     <div
                       className="font-semibold text-lg"

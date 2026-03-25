@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
 import StatusBadge from "../components/StatusBadge";
+import AirlineLogo from "../components/AirlineLogo";
 import {
   Plane,
   ArrowLeft,
@@ -230,9 +231,7 @@ export default function FlightDetail() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-              <Plane className="w-6 h-6 text-blue-400" strokeWidth={1.5} />
-            </div>
+            <AirlineLogo code={flight.airlineCode} size="lg" />
             <div>
               <div
                 className="text-2xl font-semibold"
