@@ -21,6 +21,7 @@ import {
   formatDelayStatus,
   formatDuration,
   computeDistanceKm,
+  computeGreatCircleArc,
 } from "../lib/time";
 import { format } from "date-fns";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
@@ -53,8 +54,8 @@ function RouteMap({ departure, arrival }) {
           opacity={0.5}
         />
         <Polyline
-          positions={[from, to]}
-          pathOptions={{ color: "rgba(59,130,246,0.6)", weight: 2, dashArray: "6 8" }}
+          positions={computeGreatCircleArc(departure, arrival)}
+          pathOptions={{ color: "rgba(59,130,246,0.6)", weight: 2 }}
         />
         {[from, to].map((pos, i) => (
           <CircleMarker

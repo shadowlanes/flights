@@ -13,6 +13,7 @@ import { api } from "../lib/api";
 import AirlineLogo from "../components/AirlineLogo";
 import StatusBadge from "../components/StatusBadge";
 import { format } from "date-fns";
+import { computeGreatCircleArc } from "../lib/time";
 import { MapContainer, TileLayer, Polyline, CircleMarker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -76,6 +77,8 @@ function RouteMap({ flights }) {
       routes.push({
         from: [dep.latitude, dep.longitude],
         to: [arr.latitude, arr.longitude],
+        dep,
+        arr,
         flight: f,
       });
     }
@@ -109,11 +112,10 @@ function RouteMap({ flights }) {
         {routes.map((route, i) => (
           <Polyline
             key={i}
-            positions={[route.from, route.to]}
+            positions={computeGreatCircleArc(route.dep, route.arr, 30)}
             pathOptions={{
               color: "rgba(59, 130, 246, 0.4)",
               weight: 1.5,
-              dashArray: "4 6",
             }}
           >
             <Popup>

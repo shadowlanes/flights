@@ -101,3 +101,50 @@ export function computeDistanceKm(dep, arr) {
       Math.sin(dLon / 2) ** 2;
   return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
+
+/**
+ * Compute great circle arc between two airports.
+ * Returns array of [lat, lon] pairs for a curved geodesic path.
+ * Uses spherical linear interpolation (slerp).
+ */
+export function computeGreatCircleArc(dep, arr, numPoints = 50) {
+  if (!dep?.latitude || !arr?.latitude) return [];
+
+  const toRad = (d) => (d * Math.PI) / 180;
+  const toDeg = (r) => (r * 180) / Math.PI;
+
+  const lat1 = toRad(dep.latitude);
+  const lon1 = toRad(dep.longitude);
+  const lat2 = toRad(arr.latitude);
+  const lon2 = toRad(arr.longitude);
+
+  // Angular distance between points
+  const d =
+    2 *
+    Math.asin(
+      Math.sqrt(
+        Math.sin((lat2 - lat1) / 2) ** 2 +
+          Math.cos(lat1) * Math.cos(lat2) * Math.sin((lon2 - lon1) / 2) ** 2
+      )
+    );
+
+  // If points are very close, just return a straight line
+  if (d < 0.001) return [[dep.latitude, dep.longitude], [arr.latitude, arr.longitude]];
+
+  const points = [];
+  for (let i = 0; i <= numPoints; i++) {
+    const f = i / numPoints;
+    const A = Math.sin((1 - f) * d) / Math.sin(d);
+    const B = Math.sin(f * d) / Math.sin(d);
+
+    const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
+    const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
+    const z = A * Math.sin(lat1) + B * Math.sin(lat2);
+
+    const lat = toDeg(Math.atan2(z, Math.sqrt(x * x + y * y)));
+    const lon = toDeg(Math.atan2(y, x));
+    points.push([lat, lon]);
+  }
+
+  return points;
+}
