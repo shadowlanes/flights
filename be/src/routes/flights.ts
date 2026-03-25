@@ -165,6 +165,32 @@ router.post("/api/flights", requireAuth, async (req: AuthRequest, res: Response)
   }
 });
 
+// Get precomputed user stats
+router.get("/api/flights/stats", requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const stats = await prisma.userStats.findUnique({
+      where: { userId: req.user!.id },
+    });
+
+    if (!stats) {
+      return res.json({
+        totalFlights: 0,
+        totalDistanceKm: 0,
+        totalDurationMin: 0,
+        uniqueAirlines: 0,
+        uniqueAirports: 0,
+        uniqueCountries: 0,
+        uniqueContinents: 0,
+      });
+    }
+
+    res.json(stats);
+  } catch (err) {
+    console.error("Error fetching stats:", err);
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
 // Get single flight detail
 router.get("/api/flights/:id", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
