@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: template_db
+      POSTGRES_DB: flights_db
     ports:
       - "5432:5432"
     volumes:
@@ -16,12 +16,13 @@ services:
     build:
       context: ./be
     environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/template_db?schema=public
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/flights_db?schema=public
       PORT: 3001
       FRONTEND_URL: http://localhost:8100
       BETTER_AUTH_URL: http://localhost:3001
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      AERODATABOX_API_KEY: ${AERODATABOX_API_KEY}
     ports:
       - "3001:3001"
     depends_on:

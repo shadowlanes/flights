@@ -1,6 +1,6 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "new-blink",
+  "style": "new-york",
   "rsc": false,
   "tsx": false,
   "tailwind": {
