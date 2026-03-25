@@ -21,6 +21,9 @@
     "express": "^4.21.2",
     "node-cron": "^4.2.1"
   },
+  "prisma": {
+    "seed": "ts-node --transpile-only prisma/seed.ts"
+  },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",

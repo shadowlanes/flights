@@ -17,6 +17,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  flights       Flight[]
 
   @@unique([email])
   @@map("user")
@@ -65,4 +66,78 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Airport {
+  iataCode  String @id @db.Char(3)
+  name      String
+  city      String
+  country   String
+  latitude  Float
+  longitude Float
+  timezone  String // e.g. "America/New_York"
+
+  departureFlights Flight[] @relation("DepartureAirport")
+  arrivalFlights   Flight[] @relation("ArrivalAirport")
+
+  @@map("airport")
+}
+
+model Airline {
+  iataCode String  @id @db.Char(2)
+  name     String
+  logoUrl  String?
+
+  flights Flight[]
+
+  @@map("airline")
+}
+
+model Flight {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  flightNumber String
+  date         DateTime @db.Date
+
+  airlineCode String
+  airline     Airline @relation(fields: [airlineCode], references: [iataCode])
+
+  departureCode String
+  departure     Airport @relation("DepartureAirport", fields: [departureCode], references: [iataCode])
+  arrivalCode   String
+  arrival       Airport @relation("ArrivalAirport", fields: [arrivalCode], references: [iataCode])
+
+  scheduledDeparture DateTime?
+  actualDeparture    DateTime?
+  scheduledArrival   DateTime?
+  actualArrival      DateTime?
+
+  status       String @default("Scheduled")
+  delayMinutes Int?
+
+  aircraftType String?
+  seatNumber   String?
+
+  departureGate     String?
+  departureTerminal String?
+  arrivalGate       String?
+  arrivalTerminal   String?
+
+  isArchived Boolean @default(false)
+
+  liveLat      Float?
+  liveLon      Float?
+  liveAltitude Float?
+
+  lastApiFetchAt DateTime?
+  apiCache       Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isArchived])
+  @@index([status])
+  @@map("flight")
 }
