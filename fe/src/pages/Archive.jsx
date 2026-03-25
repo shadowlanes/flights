@@ -17,31 +17,28 @@ import { MapContainer, TileLayer, Polyline, CircleMarker, Popup } from "react-le
 import "leaflet/dist/leaflet.css";
 
 function FlightListItem({ flight, index = 0 }) {
+  const dep = flight.departure;
+  const arr = flight.arrival;
+
   return (
     <Link
       to={`/flights/${flight.id}`}
-      className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.03] transition-all duration-200 cursor-pointer animate-stagger-in"
+      className="flex items-center gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.03] transition-all duration-200 cursor-pointer animate-stagger-in"
       style={{ "--stagger-index": index }}
     >
       <AirlineLogo code={flight.airlineCode} size="sm" />
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <span className="heading-sm">{flight.flightNumber}</span>
-          <span className="text-muted-foreground/20">/</span>
-          <span className="text-sm text-muted-foreground">{flight.departureCode}</span>
-          <ArrowRight className="w-3 h-3 text-muted-foreground/25" strokeWidth={1.5} />
-          <span className="text-sm text-muted-foreground">{flight.arrivalCode}</span>
+          <span className="text-xs text-muted-foreground/30">·</span>
+          <span className="text-xs text-muted-foreground truncate">
+            {dep?.city || flight.departureCode} to {arr?.city || flight.arrivalCode}
+          </span>
         </div>
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 mt-0.5">
-          <Clock className="w-3 h-3" strokeWidth={1.5} />
-          {format(new Date(flight.date), "MMM d, yyyy")}
-          {flight.airline?.name && (
-            <>
-              <span className="text-muted-foreground/20">{"\u00B7"}</span>
-              {flight.airline.name}
-            </>
-          )}
+        <div className="text-[11px] text-muted-foreground/40 mt-0.5">
+          {format(new Date(flight.date), "d MMM yyyy")}
+          {flight.airline?.name && ` · ${flight.airline.name}`}
         </div>
       </div>
 
