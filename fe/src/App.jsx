@@ -75,12 +75,7 @@ function AppShell() {
                 to="/"
                 className="flex items-center gap-2.5 group"
               >
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-400/10 flex items-center justify-center transition-all duration-300 group-hover:border-blue-400/20 group-hover:shadow-[0_0_12px_rgba(59,130,246,0.2)]">
-                  <Plane
-                    className="w-4 h-4 text-blue-400"
-                    strokeWidth={1.5}
-                  />
-                </div>
+                <img src="/logo.svg" alt="Flight" className="w-8 h-8" />
                 <span className="heading-lg text-foreground">Flight</span>
               </Link>
 
