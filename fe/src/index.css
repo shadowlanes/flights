@@ -1,6 +1,11 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
 @plugin "tailwindcss-animate";
+
+/* ============================================
+   THEME: Flat Dark — Flighty-inspired
+   Pure black, high-contrast, informational
+   ============================================ */
 
 @theme {
     --color-border: hsl(var(--border));
@@ -8,28 +13,20 @@
     --color-ring: hsl(var(--ring));
     --color-background: hsl(var(--background));
     --color-foreground: hsl(var(--foreground));
-
     --color-primary: hsl(var(--primary));
     --color-primary-foreground: hsl(var(--primary-foreground));
-
     --color-secondary: hsl(var(--secondary));
     --color-secondary-foreground: hsl(var(--secondary-foreground));
-
     --color-muted: hsl(var(--muted));
     --color-muted-foreground: hsl(var(--muted-foreground));
-
     --color-accent: hsl(var(--accent));
     --color-accent-foreground: hsl(var(--accent-foreground));
-
     --color-popover: hsl(var(--popover));
     --color-popover-foreground: hsl(var(--popover-foreground));
-
     --color-card: hsl(var(--card));
     --color-card-foreground: hsl(var(--card-foreground));
-
     --color-destructive: hsl(var(--destructive));
     --color-destructive-foreground: hsl(var(--destructive-foreground));
-
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
@@ -37,25 +34,25 @@
 
 @layer base {
     :root {
-        --background: 225 25% 6%;
-        --foreground: 210 40% 96%;
-        --card: 225 20% 10%;
-        --card-foreground: 210 40% 96%;
-        --popover: 225 20% 10%;
-        --popover-foreground: 210 40% 96%;
-        --primary: 210 100% 62%;
-        --primary-foreground: 225 25% 4%;
-        --secondary: 220 20% 14%;
-        --secondary-foreground: 210 40% 96%;
-        --muted: 220 16% 16%;
-        --muted-foreground: 215 16% 56%;
-        --accent: 220 20% 14%;
-        --accent-foreground: 210 40% 96%;
+        --background: 0 0% 0%;
+        --foreground: 0 0% 95%;
+        --card: 0 0% 6%;
+        --card-foreground: 0 0% 95%;
+        --popover: 0 0% 6%;
+        --popover-foreground: 0 0% 95%;
+        --primary: 0 0% 100%;
+        --primary-foreground: 0 0% 0%;
+        --secondary: 0 0% 10%;
+        --secondary-foreground: 0 0% 95%;
+        --muted: 0 0% 10%;
+        --muted-foreground: 0 0% 45%;
+        --accent: 0 0% 10%;
+        --accent-foreground: 0 0% 95%;
         --destructive: 0 72% 51%;
-        --destructive-foreground: 210 40% 96%;
-        --border: 220 14% 18%;
-        --input: 220 14% 18%;
-        --ring: 210 100% 62%;
+        --destructive-foreground: 0 0% 95%;
+        --border: 0 0% 12%;
+        --input: 0 0% 12%;
+        --ring: 0 0% 100%;
         --radius: 0.75rem;
     }
 }
@@ -68,6 +65,8 @@
     body {
         @apply bg-background text-foreground antialiased;
         font-family: 'DM Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -75,179 +74,147 @@
     }
 }
 
-/* Liquid glass panel */
-.glass {
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0.02) 50%,
-        rgba(255, 255, 255, 0.04) 100%
-    );
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 0 0 0.5px rgba(255, 255, 255, 0.04) inset,
-        0 8px 32px rgba(0, 0, 0, 0.3);
-}
+/* ============================================
+   CARDS
+   ============================================ */
 
-/* Glass card with subtle top highlight */
-.glass-card {
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.06) 0%,
-        rgba(255, 255, 255, 0.015) 100%
-    );
-    backdrop-filter: blur(20px) saturate(1.3);
-    -webkit-backdrop-filter: blur(20px) saturate(1.3);
+.card-flat {
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow:
-        0 0 0 0.5px rgba(255, 255, 255, 0.03) inset,
-        0 0 40px rgba(0, 0, 0, 0.15),
-        0 4px 16px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 1rem;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow:
-        0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
-        0 0 40px rgba(0, 0, 0, 0.15),
-        0 8px 32px rgba(0, 0, 0, 0.25);
-    transform: translateY(-1px);
+.card-flat:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Atmospheric background */
-.atmosphere {
-    background:
-        radial-gradient(ellipse 80% 60% at 20% 0%, rgba(56, 117, 224, 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 10%, rgba(99, 68, 202, 0.04) 0%, transparent 50%),
-        radial-gradient(ellipse 50% 40% at 50% 100%, rgba(20, 50, 100, 0.08) 0%, transparent 60%),
-        hsl(225, 25%, 6%);
+/* Top-edge shimmer on hover */
+.card-flat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+    transition: left 0.5s ease;
+    z-index: 1;
 }
 
-/* Glowing status indicators */
+.card-flat:hover::before {
+    left: 100%;
+}
+
+/* ============================================
+   STATUS COLORS
+   ============================================ */
+
+.text-on-time { color: #22c55e; }
+.text-early   { color: #22c55e; }
+.text-late    { color: #ef4444; }
+.text-delayed { color: #f59e0b; }
+
+/* ============================================
+   GATE BADGE
+   ============================================ */
+
+.gate-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: hsl(0, 0%, 90%);
+}
+
+/* ============================================
+   STATUS GLOW INDICATORS
+   ============================================ */
+
 .glow-blue {
     box-shadow: 0 0 8px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.15);
 }
-
 .glow-green {
     box-shadow: 0 0 8px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.15);
 }
-
 .glow-amber {
     box-shadow: 0 0 8px rgba(245, 158, 11, 0.5), 0 0 20px rgba(245, 158, 11, 0.15);
 }
-
 .glow-red {
     box-shadow: 0 0 8px rgba(239, 68, 68, 0.5), 0 0 20px rgba(239, 68, 68, 0.15);
 }
 
-/* Pulse animation for in-air flights */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
 @keyframes pulse-glow {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+    50% { opacity: 0.5; }
 }
-
 .animate-pulse-glow {
     animation: pulse-glow 2.5s ease-in-out infinite;
 }
 
-/* Subtle grain texture overlay */
-.grain::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    opacity: 0.015;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    z-index: 9999;
-}
-
-/* Smooth page transitions */
 @keyframes fade-up {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-fade-up {
-    animation: fade-up 0.4s ease-out forwards;
+    animation: fade-up 0.35s ease-out forwards;
 }
 
-/* Navigation link active indicator */
-.nav-active {
-    position: relative;
-}
-
-.nav-active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 16px;
-    height: 2px;
-    border-radius: 1px;
-    background: hsl(210, 100%, 62%);
-    box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
-}
-
-/* ========================================
-   ENHANCED ANIMATION & UTILITY SYSTEM
-   ======================================== */
-
-/* --- 1. Shimmer Loading --- */
 @keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
-
 .skeleton {
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.03) 25%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0.03) 75%
-    );
+    background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.8s ease-in-out infinite;
-    border-radius: 8px;
+    border-radius: 6px;
 }
 
-/* --- 2. Staggered List Entrance --- */
 @keyframes stagger-in {
-    from {
-        opacity: 0;
-        transform: translateY(16px) scale(0.98);
-        filter: blur(2px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0px);
-    }
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-stagger-in {
     opacity: 0;
-    animation: stagger-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    animation-delay: calc(var(--stagger-index, 0) * 80ms);
+    animation: stagger-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--stagger-index, 0) * 60ms);
 }
 
-/* --- 3. Button System --- */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%      { transform: translateY(-6px); }
+}
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+@keyframes spin-smooth {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+.animate-spin-smooth {
+    animation: spin-smooth 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
 .btn-glass {
     position: relative;
     display: inline-flex;
@@ -255,246 +222,243 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border-radius: 0.75rem;
-    font-size: 0.875rem;
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    color: hsl(215, 16%, 56%);
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: hsl(0, 0%, 55%);
     outline: none;
 }
-
 .btn-glass:hover {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.12);
-    color: hsl(210, 40%, 96%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: hsl(0, 0%, 92%);
 }
-
 .btn-glass:active {
-    transform: translateY(0px) scale(0.98);
-    transition-duration: 0.1s;
+    transform: scale(0.97);
+    transition-duration: 0.08s;
 }
-
 .btn-glass:focus-visible {
-    box-shadow: 0 0 0 2px hsl(225, 25%, 6%), 0 0 0 4px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 2px hsl(0,0%,0%), 0 0 0 4px rgba(255,255,255,0.2);
 }
-
 .btn-glass:disabled {
-    opacity: 0.35;
+    opacity: 0.3;
     cursor: not-allowed;
     transform: none;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.07));
+    background: rgba(59, 130, 246, 0.12);
     border-color: rgba(59, 130, 246, 0.2);
-    color: hsl(213, 90%, 75%);
+    color: #93bbfc;
 }
-
 .btn-primary:hover {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.1));
-    border-color: rgba(59, 130, 246, 0.35);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.12), 0 4px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(59, 130, 246, 0.18);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #b4d0fd;
 }
 
 .btn-danger {
-    background: rgba(239, 68, 68, 0.06);
-    border-color: rgba(239, 68, 68, 0.1);
-    color: rgba(239, 68, 68, 0.65);
+    background: rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.12);
+    color: rgba(239, 68, 68, 0.6);
 }
-
 .btn-danger:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.12);
     border-color: rgba(239, 68, 68, 0.2);
-    color: rgba(239, 68, 68, 0.9);
-    box-shadow: 0 0 16px rgba(239, 68, 68, 0.08), 0 4px 20px rgba(0, 0, 0, 0.2);
+    color: rgba(239, 68, 68, 0.85);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.14), rgba(34, 197, 94, 0.06));
-    border-color: rgba(34, 197, 94, 0.2);
-    color: hsl(152, 60%, 70%);
+    background: rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.18);
+    color: #6ee7a0;
 }
-
 .btn-success:hover {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
-    border-color: rgba(34, 197, 94, 0.35);
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.1), 0 4px 20px rgba(0, 0, 0, 0.2);
+    background: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.28);
+    color: #86efac;
 }
 
-/* --- 4. Input System --- */
+/* ============================================
+   INPUTS
+   ============================================ */
+
 .input-glass {
     width: 100%;
     padding: 0.625rem 1rem;
-    border-radius: 0.75rem;
+    border-radius: 0.625rem;
     font-size: 0.875rem;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    color: hsl(210, 40%, 96%);
+    color: hsl(0, 0%, 92%);
     outline: none;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
 }
-
 .input-glass::placeholder {
-    color: rgba(148, 163, 184, 0.35);
+    color: rgba(255, 255, 255, 0.2);
 }
-
 .input-glass:focus {
-    border-color: rgba(59, 130, 246, 0.35);
-    box-shadow:
-        0 0 0 3px rgba(59, 130, 246, 0.08),
-        0 0 16px rgba(59, 130, 246, 0.06);
-    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.06);
 }
-
-/* Dark date picker */
 .input-glass[type="date"] {
     color-scheme: dark;
 }
 
-/* --- 5. Heading Typography --- */
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
 .heading-xl {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.75rem;
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-size: 1.625rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
     line-height: 1.2;
 }
-
 .heading-lg {
     font-family: 'Outfit', sans-serif;
-    font-size: 1.25rem;
+    font-size: 1.1875rem;
     font-weight: 600;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
     line-height: 1.3;
 }
-
 .heading-md {
     font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.4;
 }
-
 .heading-sm {
     font-family: 'Outfit', sans-serif;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     font-weight: 500;
-    letter-spacing: 0;
     line-height: 1.4;
 }
 
-/* Airport code display — large monospaced-feel */
+/* Large airport code display */
 .code-display {
     font-family: 'Outfit', sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    font-weight: 800;
+    letter-spacing: 0.01em;
 }
 
-/* Label style — tiny uppercase tracking */
+/* Tiny uppercase label */
 .label-caps {
     font-size: 0.6875rem;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgba(148, 163, 184, 0.45);
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.35);
 }
 
-/* --- 6. Float Animation (empty states) --- */
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
-}
+/* ============================================
+   NAV ACTIVE INDICATOR
+   ============================================ */
 
-.animate-float {
-    animation: float 4s ease-in-out infinite;
-}
-
-/* --- 7. Enhanced Glass Card Hover Shimmer --- */
-.glass-card {
+.nav-active {
     position: relative;
-    overflow: hidden;
 }
-
-.glass-card::before {
+.nav-active::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 60%;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: hsl(0, 0%, 100%);
+    opacity: 0.6;
+}
+
+/* ============================================
+   DIVIDER
+   ============================================ */
+
+.divider-glow {
     height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.15),
-        transparent
-    );
-    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1;
+    background: rgba(255, 255, 255, 0.06);
 }
 
-.glass-card:hover::before {
-    left: 100%;
-}
+/* ============================================
+   STAT CARD ACCENT HOVER
+   ============================================ */
 
-/* --- 8. Stat card accent backgrounds --- */
-.stat-accent {
-    position: relative;
-}
-
+.stat-accent { position: relative; }
 .stat-accent::after {
     content: '';
     position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 60px;
-    height: 60px;
+    top: -16px; right: -16px;
+    width: 48px; height: 48px;
     border-radius: 50%;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.3s ease;
     pointer-events: none;
 }
+.stat-accent:hover::after { opacity: 1; }
 
-.stat-accent:hover::after {
-    opacity: 1;
+.stat-accent-blue::after    { background: radial-gradient(circle, rgba(59,130,246,0.1), transparent 70%); }
+.stat-accent-emerald::after { background: radial-gradient(circle, rgba(16,185,129,0.1), transparent 70%); }
+.stat-accent-amber::after   { background: radial-gradient(circle, rgba(245,158,11,0.1), transparent 70%); }
+.stat-accent-purple::after  { background: radial-gradient(circle, rgba(168,85,247,0.1), transparent 70%); }
+.stat-accent-rose::after    { background: radial-gradient(circle, rgba(244,63,94,0.1), transparent 70%); }
+.stat-accent-cyan::after    { background: radial-gradient(circle, rgba(6,182,212,0.1), transparent 70%); }
+.stat-accent-orange::after  { background: radial-gradient(circle, rgba(249,115,22,0.1), transparent 70%); }
+
+/* ============================================
+   VERTICAL ROUTE LINE (Flighty-style)
+   ============================================ */
+
+.route-line {
+    width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 1px;
+    position: relative;
 }
 
-.stat-accent-blue::after { background: radial-gradient(circle, rgba(59, 130, 246, 0.12), transparent 70%); }
-.stat-accent-emerald::after { background: radial-gradient(circle, rgba(16, 185, 129, 0.12), transparent 70%); }
-.stat-accent-amber::after { background: radial-gradient(circle, rgba(245, 158, 11, 0.12), transparent 70%); }
-.stat-accent-purple::after { background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent 70%); }
-.stat-accent-rose::after { background: radial-gradient(circle, rgba(244, 63, 94, 0.12), transparent 70%); }
-.stat-accent-cyan::after { background: radial-gradient(circle, rgba(6, 182, 212, 0.12), transparent 70%); }
-.stat-accent-orange::after { background: radial-gradient(circle, rgba(249, 115, 22, 0.12), transparent 70%); }
-
-/* --- 9. Divider --- */
-.divider-glow {
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(59, 130, 246, 0.15) 30%,
-        rgba(59, 130, 246, 0.08) 50%,
-        rgba(59, 130, 246, 0.15) 70%,
-        transparent 100%
-    );
+.route-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid;
+    position: relative;
+    z-index: 1;
+}
+.route-dot-dep {
+    border-color: #ef4444;
+    background: #000;
+}
+.route-dot-arr {
+    border-color: #ef4444;
+    background: #000;
+}
+.route-dot-active {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.3);
 }
 
-/* --- 10. Rotate animation for loaders --- */
-@keyframes spin-smooth {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
+/* ============================================
+   LEAFLET MAP OVERRIDES
+   ============================================ */
 
-.animate-spin-smooth {
-    animation: spin-smooth 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+.leaflet-popup-content-wrapper {
+    background: hsl(0, 0%, 8%) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
+}
+.leaflet-popup-content {
+    margin: 8px 12px !important;
+    color: rgba(255,255,255,0.7) !important;
+    font-size: 12px !important;
+}
+.leaflet-popup-tip {
+    background: hsl(0, 0%, 8%) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
 }

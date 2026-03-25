@@ -15,7 +15,7 @@ export default class ErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <div className="flex items-center justify-center py-24">
-          <div className="glass-card rounded-2xl p-10 text-center max-w-sm space-y-4">
+          <div className="card-flat rounded-2xl p-10 text-center max-w-sm space-y-4">
             <AlertCircle
               className="w-10 h-10 text-red-400 mx-auto"
               strokeWidth={1.5}

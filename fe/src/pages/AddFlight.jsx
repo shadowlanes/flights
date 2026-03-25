@@ -71,7 +71,7 @@ export default function AddFlight() {
       <h1 className="heading-xl">Add Flight</h1>
 
       {/* Search form */}
-      <form onSubmit={handleSearch} className="glass-card rounded-2xl p-6 space-y-5">
+      <form onSubmit={handleSearch} className="card-flat rounded-2xl p-6 space-y-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <label className="label-caps">Flight Number</label>
@@ -138,7 +138,7 @@ export default function AddFlight() {
           {results.map((flight, i) => (
             <div
               key={i}
-              className="glass-card rounded-2xl p-6 space-y-5 animate-stagger-in"
+              className="card-flat rounded-2xl p-6 space-y-5 animate-stagger-in"
               style={{ "--stagger-index": i }}
             >
               {/* Route header */}

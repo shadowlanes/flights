@@ -74,7 +74,7 @@ function RouteMap({ departure, arrival }) {
   ];
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden" style={{ height: 220 }}>
+    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 220 }}>
       <MapContainer
         bounds={bounds}
         style={{ height: "100%", width: "100%", background: "hsl(225, 25%, 6%)" }}
@@ -174,7 +174,7 @@ export default function FlightDetail() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="glass-card rounded-2xl p-8 space-y-6">
+        <div className="card-flat rounded-2xl p-8 space-y-6">
           <div className="flex items-center gap-3">
             <div className="skeleton w-12 h-12 rounded-xl" />
             <div className="space-y-2">
@@ -195,7 +195,7 @@ export default function FlightDetail() {
 
   if (error && !flight) {
     return (
-      <div className="max-w-2xl mx-auto glass-card rounded-2xl p-8 text-center">
+      <div className="max-w-2xl mx-auto card-flat rounded-2xl p-8 text-center">
         <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" strokeWidth={1.5} />
         <p className="text-sm text-red-300">{error}</p>
       </div>
@@ -221,7 +221,7 @@ export default function FlightDetail() {
       </button>
 
       {/* Main card */}
-      <div className="glass-card rounded-2xl p-6 sm:p-8 space-y-6 animate-fade-up">
+      <div className="card-flat rounded-2xl p-6 sm:p-8 space-y-6 animate-fade-up">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">

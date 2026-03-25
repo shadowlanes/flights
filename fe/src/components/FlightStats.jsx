@@ -84,7 +84,7 @@ export default function FlightStats({ stats, loading }) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="glass-card rounded-xl p-4">
+          <div key={i} className="card-flat rounded-xl p-4">
             <div className="skeleton h-4 w-4 mb-3" />
             <div className="skeleton h-6 w-16 mb-1.5" />
             <div className="skeleton h-3 w-12" />
@@ -105,7 +105,7 @@ export default function FlightStats({ stats, loading }) {
         return (
           <div
             key={cfg.key}
-            className={`glass-card stat-accent ${cfg.accent} rounded-xl p-4 animate-stagger-in`}
+            className={`card-flat stat-accent ${cfg.accent} rounded-xl p-4 animate-stagger-in`}
             style={{ "--stagger-index": i }}
           >
             <Icon

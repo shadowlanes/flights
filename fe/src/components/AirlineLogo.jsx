@@ -21,7 +21,7 @@ export default function AirlineLogo({ code, size = "sm" }) {
   if (failed || !code) {
     return (
       <div className={containerClass}>
-        <Plane className={`${ICON_SIZES[size]} text-blue-400`} strokeWidth={1.5} />
+        <Plane className={`${ICON_SIZES[size]} text-white/40`} strokeWidth={1.5} />
       </div>
     );
   }

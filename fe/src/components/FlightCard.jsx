@@ -23,7 +23,7 @@ export default function FlightCard({ flight, index = 0 }) {
   return (
     <Link
       to={`/flights/${flight.id}`}
-      className="block glass-card rounded-2xl p-5 space-y-4 animate-stagger-in cursor-pointer"
+      className="block card-flat rounded-2xl p-5 space-y-4 animate-stagger-in cursor-pointer"
       style={{ "--stagger-index": index }}
     >
       {/* Header: airline + flight number + status */}

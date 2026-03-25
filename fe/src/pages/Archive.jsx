@@ -96,7 +96,7 @@ function RouteMap({ flights }) {
   ];
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden" style={{ height: 400 }}>
+    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 400 }}>
       <MapContainer
         bounds={bounds}
         style={{ height: "100%", width: "100%", background: "hsl(225, 25%, 6%)" }}
@@ -192,7 +192,7 @@ export default function ArchivePage() {
 
   if (error) {
     return (
-      <div className="glass-card rounded-2xl p-6 text-center">
+      <div className="card-flat rounded-2xl p-6 text-center">
         <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" strokeWidth={1.5} />
         <p className="text-sm text-red-300">{error}</p>
       </div>
@@ -202,7 +202,7 @@ export default function ArchivePage() {
   if (flights.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
-        <div className="glass-card rounded-2xl p-12 text-center max-w-md space-y-5">
+        <div className="card-flat rounded-2xl p-12 text-center max-w-md space-y-5">
           <div className="w-14 h-14 mx-auto rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center animate-float">
             <Archive className="w-7 h-7 text-muted-foreground/40" strokeWidth={1.5} />
           </div>

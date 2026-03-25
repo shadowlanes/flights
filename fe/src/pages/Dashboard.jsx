@@ -51,7 +51,7 @@ export default function Dashboard() {
       <div className="space-y-8">
         <div className="space-y-4">
           {[1, 2].map((i) => (
-            <div key={i} className="glass-card rounded-2xl p-5">
+            <div key={i} className="card-flat rounded-2xl p-5">
               <div className="flex items-center gap-3 mb-4">
                 <div className="skeleton w-9 h-9 rounded-lg" />
                 <div className="space-y-2">
@@ -74,7 +74,7 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="glass-card rounded-2xl p-8 text-center">
+      <div className="card-flat rounded-2xl p-8 text-center">
         <AlertCircle className="w-8 h-8 text-red-400 mx-auto mb-3" strokeWidth={1.5} />
         <p className="text-sm text-red-300 mb-4">{error}</p>
         <button
@@ -100,7 +100,7 @@ export default function Dashboard() {
         )}
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="glass-card rounded-2xl p-10 text-center max-w-md space-y-5">
+          <div className="card-flat rounded-2xl p-10 text-center max-w-md space-y-5">
             <div className="w-14 h-14 mx-auto rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center animate-float">
               <Plane className="w-7 h-7 text-muted-foreground/40" strokeWidth={1.5} />
             </div>

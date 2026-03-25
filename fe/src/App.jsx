@@ -9,18 +9,12 @@ import ArchivePage from "./pages/Archive";
 
 function LoginPage() {
   return (
-    <div className="atmosphere grain min-h-screen flex items-center justify-center p-4">
-      {/* Ambient orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-blue-500/[0.03] blur-[100px]" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-indigo-500/[0.03] blur-[80px]" />
-      </div>
-
-      <div className="relative glass rounded-2xl p-10 max-w-sm w-full text-center space-y-8">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="card-flat rounded-2xl p-10 max-w-sm w-full text-center space-y-8">
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-400/10 flex items-center justify-center glow-blue">
-            <Plane className="w-7 h-7 text-blue-400" strokeWidth={1.5} />
+          <div className="w-14 h-14 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
+            <Plane className="w-7 h-7 text-white/70" strokeWidth={1.5} />
           </div>
           <h1 className="heading-xl text-3xl">Flight</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
@@ -70,16 +64,9 @@ function AppShell() {
   const navigate = useNavigate();
 
   return (
-    <div className="atmosphere grain min-h-screen">
-      {/* Ambient background orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 left-1/3 w-[600px] h-[400px] rounded-full bg-blue-500/[0.025] blur-[120px]" />
-        <div className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full bg-indigo-500/[0.02] blur-[100px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[300px] rounded-full bg-sky-500/[0.02] blur-[80px]" />
-      </div>
-
+    <div className="min-h-screen bg-background">
       {/* Navigation */}
-      <nav className="glass sticky top-0 z-50 border-b border-white/[0.06]">
+      <nav className="sticky top-0 z-50 bg-background/95 border-b border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="h-16 flex items-center justify-between">
             {/* Left: Logo + Nav */}
@@ -190,7 +177,7 @@ function App() {
 
   if (isPending) {
     return (
-      <div className="atmosphere min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-400/10 flex items-center justify-center animate-pulse">
             <Plane className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
