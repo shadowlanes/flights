@@ -462,3 +462,77 @@
     background: hsl(0, 0%, 8%) !important;
     border: 1px solid rgba(255,255,255,0.08) !important;
 }
+
+/* ============================================
+   LANDING PAGE ANIMATIONS
+   ============================================ */
+
+/* Flight path — thin line sweeping left to right */
+@keyframes fly-across {
+    0%   { left: -200px; opacity: 0; }
+    3%   { opacity: 1; }
+    95%  { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+}
+
+.flight-path {
+    position: absolute;
+    left: 0;
+    height: 1px;
+    width: 200px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.15) 60%, transparent 100%);
+    animation: fly-across var(--duration, 12s) linear infinite;
+    animation-delay: var(--delay, 0s);
+}
+
+/* Plane icon moving across */
+.flight-plane {
+    position: absolute;
+    left: 0;
+    font-size: 20px;
+    color: rgba(255, 255, 255, 0.3);
+    animation: fly-across var(--duration, 14s) linear infinite;
+    animation-delay: var(--delay, 0s);
+    letter-spacing: 0;
+}
+
+/* Airport codes fading in/out */
+@keyframes airport-pulse {
+    0%, 100% { opacity: 0; transform: scale(0.95); }
+    15%, 85% { opacity: 1; transform: scale(1); }
+}
+
+.airport-code-ghost {
+    position: absolute;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.12);
+    animation: airport-pulse var(--duration, 8s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Hero text stagger reveal */
+@keyframes hero-reveal {
+    from { opacity: 0; transform: translateY(24px); filter: blur(4px); }
+    to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.hero-stagger {
+    opacity: 0;
+    animation: hero-reveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--delay, 0s);
+}
+
+/* CTA button glow pulse */
+@keyframes cta-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,255,255,0.04); }
+    50%      { box-shadow: 0 0 30px rgba(255,255,255,0.08); }
+}
+
+.cta-glow {
+    animation: cta-glow 3s ease-in-out infinite;
+}

@@ -1,59 +1,154 @@
 import { Routes, Route, Link, NavLink, useNavigate } from "react-router";
 import { useSession, signIn, signOut } from "./lib/auth-client";
-import { Plane, Plus, LogOut, LayoutDashboard, Archive } from "lucide-react";
+import { Plane, Plus, LogOut, LayoutDashboard, Archive, Radio, History, MapIcon, BarChart3 } from "lucide-react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import AddFlight from "./pages/AddFlight";
 import FlightDetail from "./pages/FlightDetail";
 import ArchivePage from "./pages/Archive";
 
+const FLIGHT_PATHS = [
+  { top: "12%", duration: "18s", delay: "0s" },
+  { top: "28%", duration: "14s", delay: "3s" },
+  { top: "45%", duration: "22s", delay: "7s" },
+  { top: "62%", duration: "16s", delay: "1s" },
+  { top: "78%", duration: "20s", delay: "5s" },
+  { top: "35%", duration: "15s", delay: "9s" },
+  { top: "55%", duration: "19s", delay: "12s" },
+  { top: "88%", duration: "17s", delay: "4s" },
+];
+
+const FLYING_PLANES = [
+  { top: "20%", duration: "16s", delay: "2s" },
+  { top: "50%", duration: "20s", delay: "6s" },
+  { top: "72%", duration: "14s", delay: "0s" },
+  { top: "38%", duration: "18s", delay: "10s" },
+];
+
+const AIRPORT_CODES = [
+  { code: "JFK", top: "15%", left: "8%", duration: "10s", delay: "0s" },
+  { code: "DXB", top: "35%", left: "82%", duration: "12s", delay: "2s" },
+  { code: "SIN", top: "70%", left: "70%", duration: "9s", delay: "5s" },
+  { code: "LHR", top: "22%", left: "55%", duration: "11s", delay: "1s" },
+  { code: "NRT", top: "55%", left: "15%", duration: "13s", delay: "7s" },
+  { code: "CDG", top: "80%", left: "35%", duration: "10s", delay: "3s" },
+  { code: "SFO", top: "42%", left: "92%", duration: "12s", delay: "8s" },
+  { code: "BKK", top: "65%", left: "48%", duration: "9s", delay: "4s" },
+  { code: "SYD", top: "88%", left: "78%", duration: "14s", delay: "6s" },
+  { code: "DEL", top: "30%", left: "25%", duration: "11s", delay: "9s" },
+  { code: "LAX", top: "48%", left: "5%", duration: "10s", delay: "11s" },
+  { code: "ICN", top: "75%", left: "60%", duration: "13s", delay: "2s" },
+];
+
+const FEATURES = [
+  { icon: Radio, label: "Real-time tracking" },
+  { icon: History, label: "Flight history" },
+  { icon: MapIcon, label: "Route maps" },
+  { icon: BarChart3, label: "Statistics" },
+];
+
 function LoginPage() {
+  const doSignIn = () => signIn.social({ provider: "google" });
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="card-flat rounded-2xl p-10 max-w-sm w-full text-center space-y-8">
-        {/* Logo */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-14 h-14 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center">
-            <Plane className="w-7 h-7 text-white/70" strokeWidth={1.5} />
-          </div>
-          <h1 className="heading-xl text-3xl">Flight</h1>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Track your flights in real time
-          </p>
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* Animated background layer */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Flight path lines */}
+        {FLIGHT_PATHS.map((fp, i) => (
+          <div
+            key={`path-${i}`}
+            className="flight-path"
+            style={{ top: fp.top, "--duration": fp.duration, "--delay": fp.delay }}
+          />
+        ))}
+
+        {/* Flying planes */}
+        {FLYING_PLANES.map((fp, i) => (
+          <span
+            key={`plane-${i}`}
+            className="flight-plane"
+            style={{ top: fp.top, "--duration": fp.duration, "--delay": fp.delay }}
+          >
+            ✈
+          </span>
+        ))}
+
+        {/* Ghost airport codes */}
+        {AIRPORT_CODES.map((ac) => (
+          <span
+            key={ac.code}
+            className="airport-code-ghost"
+            style={{
+              top: ac.top,
+              left: ac.left,
+              "--duration": ac.duration,
+              "--delay": ac.delay,
+            }}
+          >
+            {ac.code}
+          </span>
+        ))}
+      </div>
+
+      {/* Nav bar */}
+      <nav className="relative z-10 flex items-center justify-between px-6 sm:px-10 py-5">
+        <div className="flex items-center gap-2.5">
+          <img src="/logo.svg" alt="Flight" className="w-8 h-8" />
+          <span className="heading-lg text-white">Flight</span>
         </div>
-
-        {/* Divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-        {/* Sign in */}
-        <button
-          onClick={() => signIn.social({ provider: "google" })}
-          className="btn-glass btn-primary w-full py-3.5"
-        >
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="currentColor"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-            />
-          </svg>
-          Continue with Google
+        <button onClick={doSignIn} className="btn-glass text-xs px-4 py-2 cursor-pointer">
+          Sign In
         </button>
+      </nav>
 
-        <p className="text-xs text-muted-foreground/60">
-          Your personal flight tracker
-        </p>
+      {/* Hero */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6" style={{ minHeight: "calc(100vh - 180px)" }}>
+        <div className="max-w-lg mx-auto space-y-6">
+          <h1
+            className="hero-stagger text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]"
+            style={{ fontFamily: "Outfit, sans-serif", "--delay": "0.1s" }}
+          >
+            Track every flight.
+          </h1>
+
+          <p
+            className="hero-stagger text-base sm:text-lg text-white/40 max-w-sm mx-auto leading-relaxed"
+            style={{ "--delay": "0.3s" }}
+          >
+            Monitor delays, view routes, and keep a record of every journey you take.
+          </p>
+
+          <div className="hero-stagger" style={{ "--delay": "0.5s" }}>
+            <button
+              onClick={doSignIn}
+              className="btn-glass btn-primary px-8 py-3.5 text-sm cta-glow cursor-pointer"
+            >
+              Get Started
+            </button>
+          </div>
+
+          {/* Feature pills */}
+          <div
+            className="hero-stagger flex flex-wrap justify-center gap-2.5 pt-6"
+            style={{ "--delay": "0.7s" }}
+          >
+            {FEATURES.map(({ icon: Icon, label }) => (
+              <div
+                key={label}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.06] text-xs text-white/40"
+              >
+                <Icon className="w-3 h-3" strokeWidth={1.5} />
+                {label}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="relative z-10 text-center pb-8">
+        <p className="text-[11px] text-white/20">Your personal flight tracker</p>
       </div>
     </div>
   );
