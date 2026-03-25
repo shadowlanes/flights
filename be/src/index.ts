@@ -1,38 +1,30 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
-import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth";
+import cron from "node-cron";
+import app from "./app";
+import { updateActiveFlights } from "./services/flight-updater";
+import { archiveCompletedFlights } from "./services/archiver";
 
-dotenv.config();
-
-const app = express();
 const port = Number(process.env.PORT) || 3001;
 
-app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:8100",
-    credentials: true
-}));
-
-app.use(express.json());
-app.use(cookieParser());
-
-// Better Auth handler
-app.use("/api/auth", toNodeHandler(auth));
-
-// Healthcheck endpoint
-app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+// Cron jobs
+// Poll active flights every 90 seconds
+cron.schedule("*/90 * * * * *", async () => {
+    try {
+        const count = await updateActiveFlights();
+        if (count > 0) {
+            console.log(`Updated ${count} active flight(s)`);
+        }
+    } catch (err) {
+        console.error("Flight update cron error:", err);
+    }
 });
 
-// Example protected route
-app.get("/api/protected", async (req, res) => {
-    const session = await auth.api.getSession({ headers: req.headers as any });
-    if (!session) {
-        return res.status(401).json({ error: "Unauthorized" });
+// Archive completed flights every 10 minutes
+cron.schedule("*/10 * * * *", async () => {
+    try {
+        await archiveCompletedFlights();
+    } catch (err) {
+        console.error("Archive cron error:", err);
     }
-    res.json({ message: "Hello from protected route!", user: session.user });
 });
 
 app.listen(port, '0.0.0.0', () => {
