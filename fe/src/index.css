@@ -200,3 +200,301 @@
     background: hsl(210, 100%, 62%);
     box-shadow: 0 0 6px rgba(59, 130, 246, 0.6);
 }
+
+/* ========================================
+   ENHANCED ANIMATION & UTILITY SYSTEM
+   ======================================== */
+
+/* --- 1. Shimmer Loading --- */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.03) 25%,
+        rgba(255, 255, 255, 0.08) 50%,
+        rgba(255, 255, 255, 0.03) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+/* --- 2. Staggered List Entrance --- */
+@keyframes stagger-in {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.98);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0px);
+    }
+}
+
+.animate-stagger-in {
+    opacity: 0;
+    animation: stagger-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: calc(var(--stagger-index, 0) * 80ms);
+}
+
+/* --- 3. Button System --- */
+.btn-glass {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: hsl(215, 16%, 56%);
+    outline: none;
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
+    color: hsl(210, 40%, 96%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-glass:active {
+    transform: translateY(0px) scale(0.98);
+    transition-duration: 0.1s;
+}
+
+.btn-glass:focus-visible {
+    box-shadow: 0 0 0 2px hsl(225, 25%, 6%), 0 0 0 4px rgba(59, 130, 246, 0.4);
+}
+
+.btn-glass:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.07));
+    border-color: rgba(59, 130, 246, 0.2);
+    color: hsl(213, 90%, 75%);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.1));
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.12), 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.1);
+    color: rgba(239, 68, 68, 0.65);
+}
+
+.btn-danger:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.2);
+    color: rgba(239, 68, 68, 0.9);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.08), 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.14), rgba(34, 197, 94, 0.06));
+    border-color: rgba(34, 197, 94, 0.2);
+    color: hsl(152, 60%, 70%);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+    border-color: rgba(34, 197, 94, 0.35);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.1), 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- 4. Input System --- */
+.input-glass {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: hsl(210, 40%, 96%);
+    outline: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-glass::placeholder {
+    color: rgba(148, 163, 184, 0.35);
+}
+
+.input-glass:focus {
+    border-color: rgba(59, 130, 246, 0.35);
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.08),
+        0 0 16px rgba(59, 130, 246, 0.06);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Dark date picker */
+.input-glass[type="date"] {
+    color-scheme: dark;
+}
+
+/* --- 5. Heading Typography --- */
+.heading-xl {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.heading-lg {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+}
+
+.heading-md {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+}
+
+.heading-sm {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.4;
+}
+
+/* Airport code display — large monospaced-feel */
+.code-display {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* Label style — tiny uppercase tracking */
+.label-caps {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(148, 163, 184, 0.45);
+}
+
+/* --- 6. Float Animation (empty states) --- */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* --- 7. Enhanced Glass Card Hover Shimmer --- */
+.glass-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.glass-card:hover::before {
+    left: 100%;
+}
+
+/* --- 8. Stat card accent backgrounds --- */
+.stat-accent {
+    position: relative;
+}
+
+.stat-accent::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.stat-accent:hover::after {
+    opacity: 1;
+}
+
+.stat-accent-blue::after { background: radial-gradient(circle, rgba(59, 130, 246, 0.12), transparent 70%); }
+.stat-accent-emerald::after { background: radial-gradient(circle, rgba(16, 185, 129, 0.12), transparent 70%); }
+.stat-accent-amber::after { background: radial-gradient(circle, rgba(245, 158, 11, 0.12), transparent 70%); }
+.stat-accent-purple::after { background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent 70%); }
+.stat-accent-rose::after { background: radial-gradient(circle, rgba(244, 63, 94, 0.12), transparent 70%); }
+.stat-accent-cyan::after { background: radial-gradient(circle, rgba(6, 182, 212, 0.12), transparent 70%); }
+.stat-accent-orange::after { background: radial-gradient(circle, rgba(249, 115, 22, 0.12), transparent 70%); }
+
+/* --- 9. Divider --- */
+.divider-glow {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(59, 130, 246, 0.15) 30%,
+        rgba(59, 130, 246, 0.08) 50%,
+        rgba(59, 130, 246, 0.15) 70%,
+        transparent 100%
+    );
+}
+
+/* --- 10. Rotate animation for loaders --- */
+@keyframes spin-smooth {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin-smooth {
+    animation: spin-smooth 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
