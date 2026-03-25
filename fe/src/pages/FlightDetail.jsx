@@ -22,6 +22,7 @@ import {
   formatDuration,
   computeDistanceKm,
   computeGreatCircleArc,
+  computeTimezoneChange,
 } from "../lib/time";
 import { format } from "date-fns";
 import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
@@ -285,6 +286,18 @@ export default function FlightDetail() {
           )}
         </div>
       </div>
+
+      {/* Timezone change notice */}
+      {dep?.timezone && arr?.timezone && (() => {
+        const tz = computeTimezoneChange(dep.timezone, arr.timezone);
+        if (!tz) return null;
+        return (
+          <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm">
+            <Clock className="w-4 h-4 text-muted-foreground/50 shrink-0" strokeWidth={1.5} />
+            <span className="text-muted-foreground">{tz.label}</span>
+          </div>
+        );
+      })()}
 
       {/* Route card — vertical layout */}
       <div className="card-flat rounded-2xl p-5">

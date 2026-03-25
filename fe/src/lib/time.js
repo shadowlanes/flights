@@ -148,3 +148,43 @@ export function computeGreatCircleArc(dep, arr, numPoints = 50) {
 
   return points;
 }
+
+/**
+ * Compute timezone difference between departure and arrival airports.
+ * Returns { diff: "+5h 30m", sign: "+" } or null if same timezone.
+ */
+export function computeTimezoneChange(depTimezone, arrTimezone) {
+  if (!depTimezone || !arrTimezone || depTimezone === arrTimezone) return null;
+
+  // Get UTC offset in minutes for each timezone at a fixed reference time
+  const ref = new Date("2026-06-15T12:00:00Z"); // Use summer to handle DST
+  const getOffset = (tz) => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: tz,
+      timeZoneName: "shortOffset",
+    }).formatToParts(ref);
+    const tzPart = parts.find((p) => p.type === "timeZoneName");
+    if (!tzPart) return 0;
+    // Parse "GMT+5:30" or "GMT-8" or "GMT"
+    const match = tzPart.value.match(/GMT([+-]?)(\d+)?(?::(\d+))?/);
+    if (!match) return 0;
+    const sign = match[1] === "-" ? -1 : 1;
+    const hours = parseInt(match[2] || "0");
+    const mins = parseInt(match[3] || "0");
+    return sign * (hours * 60 + mins);
+  };
+
+  const depOffset = getOffset(depTimezone);
+  const arrOffset = getOffset(arrTimezone);
+  const diffMin = arrOffset - depOffset;
+
+  if (diffMin === 0) return null;
+
+  const sign = diffMin > 0 ? "+" : "\u2212"; // use minus sign character
+  const absDiff = Math.abs(diffMin);
+  const hrs = Math.floor(absDiff / 60);
+  const mins = absDiff % 60;
+  const diff = mins > 0 ? `${sign}${hrs}h ${mins}m` : `${sign}${hrs}h`;
+
+  return { diff, label: `${diff} Timezone Change` };
+}
