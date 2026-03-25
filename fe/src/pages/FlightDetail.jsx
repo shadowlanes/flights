@@ -83,7 +83,7 @@ function AirportBlock({ airport, code, scheduledTime, actualTime, delayMinutes, 
   return (
     <div className="flex gap-4">
       {/* Dot + line */}
-      <div className="flex flex-col items-center pt-2">
+      <div className="w-2 flex flex-col items-center pt-2 shrink-0">
         <div className="route-dot route-dot-dep" />
         {isTop && <div className="route-line flex-1 mt-1 min-h-6" />}
       </div>
@@ -301,7 +301,7 @@ export default function FlightDetail() {
 
         {/* Route summary */}
         <div className="flex gap-4">
-          <div className="flex flex-col items-center">
+          <div className="w-2 flex flex-col items-center shrink-0">
             <div className="route-line flex-1 min-h-4" />
           </div>
           <div className="py-3 flex-1">
