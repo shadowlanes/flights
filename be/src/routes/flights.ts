@@ -3,6 +3,7 @@ import prisma from "../lib/prisma";
 import { requireAuth, AuthRequest } from "../middleware/auth";
 import { searchFlight, getFlightStatus } from "../services/aerodatabox";
 import { archiveCompletedFlights } from "../services/archiver";
+import { recomputeUserStats } from "../services/stats";
 import { format } from "date-fns";
 
 const router = Router();
@@ -154,6 +155,9 @@ router.post("/api/flights", requireAuth, async (req: AuthRequest, res: Response)
       include: { departure: true, arrival: true, airline: true },
     });
 
+    // Recompute stats after adding a flight
+    recomputeUserStats(req.user!.id).catch(console.error);
+
     res.status(201).json(flight);
   } catch (err) {
     console.error("Error adding flight:", err);
@@ -245,6 +249,10 @@ router.delete("/api/flights/:id", requireAuth, async (req: AuthRequest, res: Res
     }
 
     await prisma.flight.delete({ where: { id: flight.id } });
+
+    // Recompute stats after deleting a flight
+    recomputeUserStats(req.user!.id).catch(console.error);
+
     res.status(204).send();
   } catch (err) {
     console.error("Error deleting flight:", err);
