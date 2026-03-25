@@ -28,7 +28,7 @@ app.get("/api/health", (req, res) => {
 
 // Example protected route
 app.get("/api/protected", async (req, res) => {
-    const session = await auth.api.getSession({ headers: req.headers });
+    const session = await auth.api.getSession({ headers: req.headers as any });
     if (!session) {
         return res.status(401).json({ error: "Unauthorized" });
     }
