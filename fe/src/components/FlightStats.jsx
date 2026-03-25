@@ -27,7 +27,7 @@ const STATS_CONFIG = [
     icon: Plane,
     format: (v) => v.toLocaleString(),
     color: "text-blue-400",
-    glowClass: "",
+    accent: "stat-accent-blue",
   },
   {
     key: "totalDistanceKm",
@@ -35,7 +35,7 @@ const STATS_CONFIG = [
     icon: Globe,
     format: (v) => `${formatDistance(v)} km`,
     color: "text-emerald-400",
-    glowClass: "",
+    accent: "stat-accent-emerald",
   },
   {
     key: "totalDurationMin",
@@ -43,7 +43,7 @@ const STATS_CONFIG = [
     icon: Clock,
     format: (v) => formatDuration(v),
     color: "text-amber-400",
-    glowClass: "",
+    accent: "stat-accent-amber",
   },
   {
     key: "uniqueAirlines",
@@ -51,7 +51,7 @@ const STATS_CONFIG = [
     icon: Building2,
     format: (v) => v.toString(),
     color: "text-purple-400",
-    glowClass: "",
+    accent: "stat-accent-purple",
   },
   {
     key: "uniqueCountries",
@@ -59,7 +59,7 @@ const STATS_CONFIG = [
     icon: Flag,
     format: (v) => v.toString(),
     color: "text-rose-400",
-    glowClass: "",
+    accent: "stat-accent-rose",
   },
   {
     key: "uniqueContinents",
@@ -67,7 +67,7 @@ const STATS_CONFIG = [
     icon: Map,
     format: (v) => v.toString(),
     color: "text-cyan-400",
-    glowClass: "",
+    accent: "stat-accent-cyan",
   },
   {
     key: "uniqueAirports",
@@ -75,7 +75,7 @@ const STATS_CONFIG = [
     icon: MapPin,
     format: (v) => v.toString(),
     color: "text-orange-400",
-    glowClass: "",
+    accent: "stat-accent-orange",
   },
 ];
 
@@ -84,13 +84,10 @@ export default function FlightStats({ stats, loading }) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {Array.from({ length: 7 }).map((_, i) => (
-          <div
-            key={i}
-            className="glass-card rounded-xl p-4 animate-pulse"
-          >
-            <div className="h-4 w-4 rounded bg-white/[0.04] mb-3" />
-            <div className="h-6 w-16 rounded bg-white/[0.04] mb-1.5" />
-            <div className="h-3 w-12 rounded bg-white/[0.03]" />
+          <div key={i} className="glass-card rounded-xl p-4">
+            <div className="skeleton h-4 w-4 mb-3" />
+            <div className="skeleton h-6 w-16 mb-1.5" />
+            <div className="skeleton h-3 w-12" />
           </div>
         ))}
       </div>
@@ -108,20 +105,17 @@ export default function FlightStats({ stats, loading }) {
         return (
           <div
             key={cfg.key}
-            className="glass-card rounded-xl p-4 animate-fade-up"
-            style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
+            className={`glass-card stat-accent ${cfg.accent} rounded-xl p-4 animate-stagger-in`}
+            style={{ "--stagger-index": i }}
           >
             <Icon
               className={`w-4 h-4 ${cfg.color} mb-3 opacity-70`}
               strokeWidth={1.5}
             />
-            <div
-              className="text-xl font-semibold tracking-tight"
-              style={{ fontFamily: "Outfit, sans-serif" }}
-            >
+            <div className="heading-lg tracking-tight">
               {cfg.format(value)}
             </div>
-            <div className="text-[11px] text-muted-foreground/50 mt-0.5">
+            <div className="label-caps mt-1">
               {cfg.label}
             </div>
           </div>

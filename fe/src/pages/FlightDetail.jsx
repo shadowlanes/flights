@@ -33,22 +33,20 @@ function TimelineStep({ label, scheduled, actual, displayValue, isCompleted, isC
     <div className="flex items-start gap-3">
       <div className="flex flex-col items-center mt-1">
         <div
-          className={`w-3 h-3 rounded-full border-2 ${
+          className={`w-3 h-3 rounded-full border-2 transition-all duration-500 ${
             isCurrent
               ? "border-blue-400 bg-blue-400/30 glow-blue"
               : isCompleted
-              ? "border-green-400 bg-green-400/30"
+              ? "border-emerald-400 bg-emerald-400/30"
               : "border-white/20 bg-transparent"
           }`}
         />
         <div className="w-px h-8 bg-white/[0.06]" />
       </div>
       <div className="pb-5 -mt-0.5">
-        <div className="text-xs text-muted-foreground/60 uppercase tracking-wider mb-1">
-          {label}
-        </div>
+        <div className="label-caps mb-1">{label}</div>
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium">
+          <span className="heading-sm">
             {displayValue || fmtTime(actual || scheduled)}
           </span>
           {!displayValue && actual && scheduled && actual !== scheduled && (
@@ -68,10 +66,6 @@ function RouteMap({ departure, arrival }) {
   const from = [departure.latitude, departure.longitude];
   const to = [arrival.latitude, arrival.longitude];
 
-  const midLat = (from[0] + to[0]) / 2;
-  const midLon = (from[1] + to[1]) / 2;
-
-  // Compute bounds with padding
   const latPad = Math.abs(from[0] - to[0]) * 0.3 + 2;
   const lonPad = Math.abs(from[1] - to[1]) * 0.3 + 2;
   const bounds = [
@@ -147,7 +141,6 @@ export default function FlightDetail() {
 
   useEffect(() => {
     fetchFlight();
-    // Poll for non-archived flights
     const interval = setInterval(() => {
       if (flight && !flight.isArchived) fetchFlight();
     }, 60000);
@@ -181,19 +174,20 @@ export default function FlightDetail() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto">
-        <div className="glass-card rounded-2xl p-8 animate-pulse space-y-6">
+        <div className="glass-card rounded-2xl p-8 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white/[0.04]" />
+            <div className="skeleton w-12 h-12 rounded-xl" />
             <div className="space-y-2">
-              <div className="h-5 w-24 rounded bg-white/[0.04]" />
-              <div className="h-3 w-32 rounded bg-white/[0.03]" />
+              <div className="skeleton h-5 w-24" />
+              <div className="skeleton h-3 w-32" />
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="h-12 w-16 rounded bg-white/[0.04]" />
+            <div className="skeleton h-12 w-16" />
             <div className="flex-1 h-px bg-white/[0.04]" />
-            <div className="h-12 w-16 rounded bg-white/[0.04]" />
+            <div className="skeleton h-12 w-16" />
           </div>
+          <div className="skeleton h-[220px] w-full rounded-2xl" />
         </div>
       </div>
     );
@@ -220,25 +214,20 @@ export default function FlightDetail() {
       {/* Back button */}
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+        className="btn-glass px-3 py-1.5 text-sm"
       >
         <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
         Back
       </button>
 
       {/* Main card */}
-      <div className="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+      <div className="glass-card rounded-2xl p-6 sm:p-8 space-y-6 animate-fade-up">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
             <AirlineLogo code={flight.airlineCode} size="lg" />
             <div>
-              <div
-                className="text-2xl font-semibold"
-                style={{ fontFamily: "Outfit, sans-serif" }}
-              >
-                {flight.flightNumber}
-              </div>
+              <div className="heading-xl">{flight.flightNumber}</div>
               <div className="text-sm text-muted-foreground">
                 {flight.airline?.name || flight.airlineCode}
                 {" \u00B7 "}
@@ -252,31 +241,21 @@ export default function FlightDetail() {
         {/* Route */}
         <div className="flex items-center gap-4 py-4">
           <div className="flex-1">
-            <div
-              className="text-3xl font-bold"
-              style={{ fontFamily: "Outfit, sans-serif" }}
-            >
-              {flight.departureCode}
-            </div>
+            <div className="code-display text-3xl">{flight.departureCode}</div>
             <div className="text-sm text-muted-foreground mt-1">{dep?.city || ""}</div>
             <div className="text-xs text-muted-foreground/50">{dep?.name || ""}</div>
           </div>
 
           <div className="flex items-center gap-2 flex-1 justify-center">
-            <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+            <div className="h-px flex-1 bg-gradient-to-r from-blue-400/20 to-transparent" />
             <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
               <ArrowRight className="w-3.5 h-3.5 text-muted-foreground/40" strokeWidth={1.5} />
             </div>
-            <div className="h-px flex-1 bg-gradient-to-l from-white/10 to-transparent" />
+            <div className="h-px flex-1 bg-gradient-to-l from-blue-400/20 to-transparent" />
           </div>
 
           <div className="flex-1 text-right">
-            <div
-              className="text-3xl font-bold"
-              style={{ fontFamily: "Outfit, sans-serif" }}
-            >
-              {flight.arrivalCode}
-            </div>
+            <div className="code-display text-3xl">{flight.arrivalCode}</div>
             <div className="text-sm text-muted-foreground mt-1">{arr?.city || ""}</div>
             <div className="text-xs text-muted-foreground/50">{arr?.name || ""}</div>
           </div>
@@ -295,9 +274,7 @@ export default function FlightDetail() {
 
         {/* Timeline */}
         <div className="pt-2">
-          <div className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wider mb-4">
-            Timeline
-          </div>
+          <div className="label-caps mb-4">Timeline</div>
           <TimelineStep
             label="Departure"
             scheduled={flight.scheduledDeparture}
@@ -329,7 +306,7 @@ export default function FlightDetail() {
         </div>
 
         {/* Info grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
           {flight.aircraftType && (
             <InfoItem icon={Plane} label="Aircraft" value={flight.aircraftType} />
           )}
@@ -359,23 +336,15 @@ export default function FlightDetail() {
 
         {/* Actions */}
         <div className="flex items-center gap-3 pt-2">
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.1] transition-all duration-300 cursor-pointer disabled:opacity-40"
-          >
+          <button onClick={handleRefresh} disabled={refreshing} className="btn-glass">
             {refreshing ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={1.5} />
+              <Loader2 className="w-3.5 h-3.5 animate-spin-smooth" strokeWidth={1.5} />
             ) : (
               <RefreshCw className="w-3.5 h-3.5" strokeWidth={1.5} />
             )}
             {refreshing ? "Refreshing..." : "Refresh Status"}
           </button>
-          <button
-            onClick={handleDelete}
-            disabled={deleting}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-red-400/70 hover:text-red-400 bg-red-500/[0.04] border border-red-400/[0.08] hover:border-red-400/[0.15] transition-all duration-300 cursor-pointer disabled:opacity-40"
-          >
+          <button onClick={handleDelete} disabled={deleting} className="btn-glass btn-danger">
             <Trash2 className="w-3.5 h-3.5" strokeWidth={1.5} />
             {deleting ? "Removing..." : "Remove"}
           </button>
@@ -387,14 +356,12 @@ export default function FlightDetail() {
 
 function InfoItem({ icon: Icon, label, value }) {
   return (
-    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+    <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05] transition-all duration-200 hover:bg-white/[0.05] hover:border-white/[0.08]">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="w-3 h-3 text-muted-foreground/40" strokeWidth={1.5} />
-        <span className="text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider">
-          {label}
-        </span>
+        <span className="label-caps">{label}</span>
       </div>
-      <div className="text-sm font-medium">{value}</div>
+      <div className="heading-sm">{value}</div>
     </div>
   );
 }
