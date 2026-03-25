@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "test": "vitest run",
     "import-flights": "ts-node --transpile-only scripts/import-flights.ts",
-    "download-logos": "ts-node --transpile-only scripts/download-airline-logos.ts"
+    "download-logos": "ts-node --transpile-only scripts/download-airline-logos.ts",
+    "backfill-stats": "ts-node --transpile-only scripts/backfill-stats.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0",
