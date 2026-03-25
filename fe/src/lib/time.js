@@ -7,19 +7,34 @@ export function formatRelativeTime(isoDate) {
   const target = new Date(isoDate).getTime();
   const diffMs = target - now;
   const absDiff = Math.abs(diffMs);
+  const suffix = diffMs > 0 ? "from now" : "ago";
 
   if (absDiff < 60000) return "now";
 
   const totalMin = Math.floor(absDiff / 60000);
-  const hrs = Math.floor(totalMin / 60);
-  const mins = totalMin % 60;
+  const totalHrs = Math.floor(totalMin / 60);
+  const totalDays = Math.floor(totalHrs / 24);
+  const totalWeeks = Math.floor(totalDays / 7);
+  const totalMonths = Math.floor(totalDays / 30);
+  const totalYears = Math.floor(totalDays / 365);
 
   let str;
-  if (hrs > 0 && mins > 0) str = `${hrs}h ${mins}m`;
-  else if (hrs > 0) str = `${hrs}h`;
-  else str = `${mins}m`;
+  if (totalYears >= 1) {
+    str = totalYears === 1 ? "1 year" : `${totalYears} years`;
+  } else if (totalMonths >= 1) {
+    str = totalMonths === 1 ? "1 month" : `${totalMonths} months`;
+  } else if (totalWeeks >= 1) {
+    str = totalWeeks === 1 ? "1 week" : `${totalWeeks} weeks`;
+  } else if (totalDays >= 1) {
+    str = totalDays === 1 ? "1 day" : `${totalDays} days`;
+  } else if (totalHrs >= 1) {
+    const mins = totalMin % 60;
+    str = mins > 0 ? `${totalHrs}h ${mins}m` : `${totalHrs}h`;
+  } else {
+    str = `${totalMin}m`;
+  }
 
-  return diffMs > 0 ? `in ${str}` : `${str} ago`;
+  return diffMs > 0 ? `in ${str}` : `${str} ${suffix}`;
 }
 
 /**
