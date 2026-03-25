@@ -4,6 +4,7 @@ import { requireAuth, AuthRequest } from "../middleware/auth";
 import { searchFlight, getFlightStatus } from "../services/aerodatabox";
 import { archiveCompletedFlights } from "../services/archiver";
 import { recomputeUserStats } from "../services/stats";
+import { getWeather } from "../services/weather";
 import { format } from "date-fns";
 
 const router = Router();
@@ -188,6 +189,35 @@ router.get("/api/flights/stats", requireAuth, async (req: AuthRequest, res: Resp
   } catch (err) {
     console.error("Error fetching stats:", err);
     res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+// Get arrival weather for a flight
+router.get("/api/flights/:id/weather", requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const flight = await prisma.flight.findFirst({
+      where: { id: req.params.id, userId: req.user!.id },
+      include: { arrival: true },
+    });
+
+    if (!flight) {
+      return res.status(404).json({ error: "Flight not found" });
+    }
+
+    if (!flight.arrival?.latitude || !flight.arrival?.longitude) {
+      return res.status(404).json({ error: "Airport coordinates not available" });
+    }
+
+    const weather = await getWeather(flight.arrival.latitude, flight.arrival.longitude);
+
+    if (!weather) {
+      return res.status(503).json({ error: "Weather data unavailable" });
+    }
+
+    res.json(weather);
+  } catch (err) {
+    console.error("Error fetching weather:", err);
+    res.status(500).json({ error: "Failed to fetch weather" });
   }
 });
 

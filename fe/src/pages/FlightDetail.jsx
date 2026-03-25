@@ -151,6 +151,7 @@ export default function FlightDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [flight, setFlight] = useState(null);
+  const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -170,6 +171,10 @@ export default function FlightDetail() {
 
   useEffect(() => {
     fetchFlight();
+    // Fetch weather for non-archived flights
+    if (!flight?.isArchived) {
+      api.get(`/api/flights/${id}/weather`).then(setWeather).catch(() => {});
+    }
     const interval = setInterval(() => {
       if (flight && !flight.isArchived) fetchFlight();
     }, 60000);
@@ -298,6 +303,24 @@ export default function FlightDetail() {
           </div>
         );
       })()}
+
+      {/* Arrival weather */}
+      {weather && !flight.isArchived && (
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm">
+          <img
+            src={`https://openweathermap.org/img/wn/${weather.icon}.png`}
+            alt={weather.description}
+            className="w-8 h-8 -ml-1"
+          />
+          <div>
+            <span className="font-medium">{weather.temp}°C</span>
+            <span className="text-muted-foreground ml-1.5 capitalize">{weather.description}</span>
+          </div>
+          <span className="text-muted-foreground/40 text-xs ml-auto">
+            at {arr?.city || flight.arrivalCode}
+          </span>
+        </div>
+      )}
 
       {/* Route card — vertical layout */}
       <div className="card-flat rounded-2xl p-5">

@@ -76,4 +76,9 @@ describe("Protected Flight Endpoints (no auth)", () => {
     const res = await request(app).get("/api/flights/stats");
     expect(res.status).toBe(401);
   });
+
+  it("GET /api/flights/:id/weather returns 401 without auth", async () => {
+    const res = await request(app).get("/api/flights/some-id/weather");
+    expect(res.status).toBe(401);
+  });
 });
