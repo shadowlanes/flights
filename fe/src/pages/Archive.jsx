@@ -23,7 +23,7 @@ function FlightListItem({ flight, index = 0 }) {
 
   return (
     <Link
-      to={`/flights/${flight.id}`}
+      to={`/archive/${flight.id}`}
       className="flex items-center gap-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-white/[0.08] hover:bg-white/[0.03] transition-all duration-200 cursor-pointer animate-stagger-in"
       style={{ "--stagger-index": index }}
     >

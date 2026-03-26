@@ -147,7 +147,7 @@ function AirportBlock({ airport, code, scheduledTime, actualTime, delayMinutes, 
   );
 }
 
-export default function FlightDetail() {
+export default function UpcomingFlightDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [flight, setFlight] = useState(null);

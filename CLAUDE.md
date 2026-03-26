@@ -53,6 +53,10 @@ cd be && npx prisma migrate dev --name <name>   # New migration
 cd be && npx prisma db seed                       # Re-seed airports/airlines
 ```
 
+## Git Conventions
+
+- Do NOT add Co-Authored-By trailers to commit messages.
+
 ## Key Patterns
 
 - `app.ts` is separated from `index.ts` so supertest can import the Express app without starting the server.
