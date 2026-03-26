@@ -61,16 +61,18 @@ function RouteMap({ flights }) {
     if (dep.latitude && dep.longitude) {
       const key = dep.iataCode;
       if (!airports.has(key)) {
-        airports.set(key, { ...dep, count: 0 });
+        airports.set(key, { ...dep, count: 0, isDep: false, isArr: false });
       }
       airports.get(key).count++;
+      airports.get(key).isDep = true;
     }
     if (arr.latitude && arr.longitude) {
       const key = arr.iataCode;
       if (!airports.has(key)) {
-        airports.set(key, { ...arr, count: 0 });
+        airports.set(key, { ...arr, count: 0, isDep: false, isArr: false });
       }
       airports.get(key).count++;
+      airports.get(key).isArr = true;
     }
 
     if (dep.latitude && dep.longitude && arr.latitude && arr.longitude) {
@@ -126,16 +128,28 @@ function RouteMap({ flights }) {
           </Polyline>
         ))}
 
-        {/* Airport markers */}
-        {Array.from(airports.values()).map((apt) => (
+        {/* Airport markers: blue=departure, emerald=arrival, blend=both */}
+        {Array.from(airports.values()).map((apt) => {
+          const isBoth = apt.isDep && apt.isArr;
+          const fillColor = isBoth
+            ? "rgba(148, 163, 184, 0.8)"
+            : apt.isArr
+              ? "rgba(52, 211, 153, 0.7)"
+              : "rgba(59, 130, 246, 0.7)";
+          const strokeColor = isBoth
+            ? "rgba(148, 163, 184, 0.3)"
+            : apt.isArr
+              ? "rgba(52, 211, 153, 0.3)"
+              : "rgba(59, 130, 246, 0.3)";
+          return (
           <CircleMarker
             key={apt.iataCode}
             center={[apt.latitude, apt.longitude]}
             radius={4}
             pathOptions={{
-              fillColor: "rgba(59, 130, 246, 0.7)",
+              fillColor,
               fillOpacity: 1,
-              color: "rgba(59, 130, 246, 0.3)",
+              color: strokeColor,
               weight: 6,
             }}
           >
@@ -147,7 +161,8 @@ function RouteMap({ flights }) {
               </div>
             </Popup>
           </CircleMarker>
-        ))}
+          );
+        })}
       </MapContainer>
     </div>
   );

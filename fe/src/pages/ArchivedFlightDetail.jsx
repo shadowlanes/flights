@@ -58,19 +58,28 @@ function RouteMap({ departure, arrival }) {
           positions={computeGreatCircleArc(departure, arrival)}
           pathOptions={{ color: "rgba(59,130,246,0.6)", weight: 2 }}
         />
-        {[from, to].map((pos, i) => (
-          <CircleMarker
-            key={i}
-            center={pos}
-            radius={4}
-            pathOptions={{
-              fillColor: "rgba(59,130,246,0.9)",
-              fillOpacity: 1,
-              color: "rgba(59,130,246,0.3)",
-              weight: 6,
-            }}
-          />
-        ))}
+        {/* Departure marker (blue) */}
+        <CircleMarker
+          center={from}
+          radius={4}
+          pathOptions={{
+            fillColor: "rgba(59,130,246,0.9)",
+            fillOpacity: 1,
+            color: "rgba(59,130,246,0.3)",
+            weight: 6,
+          }}
+        />
+        {/* Arrival marker (emerald) */}
+        <CircleMarker
+          center={to}
+          radius={4}
+          pathOptions={{
+            fillColor: "rgba(52,211,153,0.9)",
+            fillOpacity: 1,
+            color: "rgba(52,211,153,0.3)",
+            weight: 6,
+          }}
+        />
       </MapContainer>
     </div>
   );
