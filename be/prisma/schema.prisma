@@ -78,6 +78,9 @@ model Airport {
   longitude Float
   timezone  String // e.g. "America/New_York"
 
+  cityDistanceKm Float? // driving distance from city center
+  cityTravelMin  Int?   // driving time from city center in minutes
+
   departureFlights Flight[] @relation("DepartureAirport")
   arrivalFlights   Flight[] @relation("ArrivalAirport")
 
