@@ -13,6 +13,8 @@ import {
   X,
   DoorOpen,
   Building2,
+  CloudSun,
+  Wind,
 } from "lucide-react";
 import { api } from "../lib/api";
 import {
@@ -85,6 +87,14 @@ function RouteMap({ departure, arrival }) {
   );
 }
 
+const AQI_LABELS = {
+  1: { label: "Good", color: "text-emerald-400" },
+  2: { label: "Fair", color: "text-lime-400" },
+  3: { label: "Moderate", color: "text-amber-400" },
+  4: { label: "Poor", color: "text-orange-400" },
+  5: { label: "Very Poor", color: "text-red-400" },
+};
+
 function InfoItem({ icon: Icon, label, value }) {
   return (
     <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.05]">
@@ -121,6 +131,7 @@ export default function UpcomingFlightDetailV2() {
 
   useEffect(() => {
     fetchFlight();
+    // Trigger weather fetch (endpoint stores it on the flight record)
     if (!flight?.isArchived) {
       api.get(`/api/flights/${id}/weather`).then(setWeather).catch(() => {});
     }
@@ -129,6 +140,14 @@ export default function UpcomingFlightDetailV2() {
     }, 60000);
     return () => clearInterval(interval);
   }, [fetchFlight, flight?.isArchived]);
+
+  // Use weather from endpoint response, or fall back to stored flight data
+  const weatherData = weather || (flight?.destWeatherTemp != null ? {
+    temp: flight.destWeatherTemp,
+    description: flight.destWeatherDesc,
+    icon: flight.destWeatherIcon,
+    aqi: flight.destWeatherAqi,
+  } : null);
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -369,21 +388,27 @@ export default function UpcomingFlightDetailV2() {
         );
       })()}
 
-      {/* Arrival weather */}
-      {weather && !flight.isArchived && (
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-sm">
-          <img
-            src={`https://openweathermap.org/img/wn/${weather.icon}.png`}
-            alt={weather.description}
-            className="w-8 h-8 -ml-1"
-          />
-          <div>
-            <span className="font-medium">{weather.temp}°C</span>
-            <span className="text-muted-foreground ml-1.5 capitalize">{weather.description}</span>
+      {/* Destination weather forecast */}
+      {weatherData && (
+        <div className="card-flat rounded-2xl p-4">
+          <div className="label-caps mb-3">Weather at {arr?.city || flight.arrivalCode}</div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CloudSun className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
+              <div>
+                <span className="heading-lg">{weatherData.temp}°C</span>
+                <span className="text-sm text-muted-foreground ml-2 capitalize">{weatherData.description}</span>
+              </div>
+            </div>
+            {weatherData.aqi != null && AQI_LABELS[weatherData.aqi] && (
+              <div className="text-right">
+                <div className="label-caps mb-0.5">AQI</div>
+                <span className={`heading-sm ${AQI_LABELS[weatherData.aqi].color}`}>
+                  {AQI_LABELS[weatherData.aqi].label}
+                </span>
+              </div>
+            )}
           </div>
-          <span className="text-muted-foreground/40 text-xs ml-auto">
-            at {arr?.city || flight.arrivalCode}
-          </span>
         </div>
       )}
 
