@@ -308,6 +308,14 @@ export default function UpcomingFlightDetailV2() {
             <div className="text-right">
               <div className="code-display text-4xl tracking-tight">{flight.arrivalCode}</div>
               <div className="text-sm text-muted-foreground mt-1">{arr?.city || flight.arrivalCode}</div>
+              {arr?.cityTravelMin != null && (
+                <div className="flex items-center justify-end gap-1 mt-1 text-[11px] text-muted-foreground/40">
+                  <Car className="w-3 h-3" strokeWidth={1.5} />
+                  ~{arr.cityTravelMin >= 60
+                    ? `${Math.floor(arr.cityTravelMin / 60)}h ${arr.cityTravelMin % 60}m`
+                    : `${arr.cityTravelMin}m`} to city
+                </div>
+              )}
             </div>
           </div>
         </div>
