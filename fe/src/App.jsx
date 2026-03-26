@@ -5,7 +5,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Dashboard from "./pages/Dashboard";
 import AddFlight from "./pages/AddFlight";
 import ArchivedFlightDetail from "./pages/ArchivedFlightDetail";
-import UpcomingFlightDetail from "./pages/UpcomingFlightDetail";
+import UpcomingFlightDetailV2 from "./pages/UpcomingFlightDetailV2";
 import ArchivePage from "./pages/Archive";
 
 const FLIGHT_PATHS = [
@@ -253,7 +253,7 @@ function AppShell() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/flights/add" element={<AddFlight />} />
-              <Route path="/flights/:id" element={<UpcomingFlightDetail />} />
+              <Route path="/flights/:id" element={<UpcomingFlightDetailV2 />} />
               <Route path="/archive/:id" element={<ArchivedFlightDetail />} />
               <Route path="/archive" element={<ArchivePage />} />
             </Routes>
