@@ -18,8 +18,8 @@ cron.schedule("*/90 * * * * *", async () => {
     }
 });
 
-// Archive completed flights every 10 minutes
-cron.schedule("*/10 * * * *", async () => {
+// Archive completed flights every 2 hours
+cron.schedule("0 */2 * * *", async () => {
     try {
         await archiveCompletedFlights();
     } catch (err) {
