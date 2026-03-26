@@ -135,6 +135,12 @@ model Flight {
   lastApiFetchAt DateTime?
   apiCache       Json?
 
+  destWeatherTemp      Float?
+  destWeatherDesc      String?
+  destWeatherIcon      String?
+  destWeatherAqi       Int?
+  destWeatherUpdatedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
