@@ -62,7 +62,8 @@ cd be && npx prisma db seed                       # Re-seed airports/airlines
 - `app.ts` is separated from `index.ts` so supertest can import the Express app without starting the server.
 - Flight routes use per-route `requireAuth` middleware (not global router middleware) to avoid blocking other routers.
 - AeroDataBox responses are cached in the `apiCache` JSON column with `lastApiFetchAt` for staleness checks.
-- Cron: flight status polling every 90s, auto-archive every 10min.
+- Cron: flight status polling every 90s, archive + weather update every 2h.
+- Weather: Open-Meteo (free, no API key) for destination forecast + AQI. Stored on Flight record.
 - Frontend uses CSS classes `.glass` (nav), `.glass-card` (content cards), `.atmosphere` (background).
 - All times stored as UTC in the database.
 
