@@ -408,7 +408,7 @@ export default function UpcomingFlightDetailV2() {
       {/* Destination weather forecast */}
       {weatherData && (
         <div className="card-flat rounded-2xl p-4">
-          <div className="label-caps mb-3">Weather at {arr?.city || flight.arrivalCode}</div>
+          <div className="label-caps mb-3">Weather when you reach</div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CloudSun className="w-5 h-5 text-blue-400" strokeWidth={1.5} />
