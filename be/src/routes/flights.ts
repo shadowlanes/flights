@@ -4,7 +4,7 @@ import { requireAuth, AuthRequest } from "../middleware/auth";
 import { searchFlight, getFlightStatus } from "../services/aerodatabox";
 import { archiveCompletedFlights } from "../services/archiver";
 import { recomputeUserStats } from "../services/stats";
-import { getWeather } from "../services/weather";
+import { getForecastAtTime } from "../services/weather";
 import { format } from "date-fns";
 
 const router = Router();
@@ -192,7 +192,7 @@ router.get("/api/flights/stats", requireAuth, async (req: AuthRequest, res: Resp
   }
 });
 
-// Get arrival weather for a flight
+// Get arrival weather forecast for a flight (returns stored data, refreshes if stale)
 router.get("/api/flights/:id/weather", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const flight = await prisma.flight.findFirst({
@@ -204,17 +204,60 @@ router.get("/api/flights/:id/weather", requireAuth, async (req: AuthRequest, res
       return res.status(404).json({ error: "Flight not found" });
     }
 
+    if (!flight.scheduledArrival) {
+      return res.status(404).json({ error: "No arrival time available" });
+    }
+
+    // Only provide weather for flights within 3 days
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+    const arrTime = new Date(flight.scheduledArrival).getTime();
+    if (arrTime - Date.now() > THREE_DAYS_MS || arrTime < Date.now()) {
+      return res.status(404).json({ error: "Weather only available for flights within 3 days" });
+    }
+
+    // If we have fresh stored weather (< 2 hours old), return it
+    const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+    if (
+      flight.destWeatherTemp != null &&
+      flight.destWeatherUpdatedAt &&
+      Date.now() - new Date(flight.destWeatherUpdatedAt).getTime() < TWO_HOURS_MS
+    ) {
+      return res.json({
+        temp: flight.destWeatherTemp,
+        description: flight.destWeatherDesc,
+        icon: flight.destWeatherIcon,
+        aqi: flight.destWeatherAqi,
+      });
+    }
+
+    // Otherwise fetch fresh data on demand
     if (!flight.arrival?.latitude || !flight.arrival?.longitude) {
       return res.status(404).json({ error: "Airport coordinates not available" });
     }
 
-    const weather = await getWeather(flight.arrival.latitude, flight.arrival.longitude);
+    const forecast = await getForecastAtTime(
+      flight.arrival.latitude,
+      flight.arrival.longitude,
+      new Date(flight.scheduledArrival)
+    );
 
-    if (!weather) {
+    if (!forecast) {
       return res.status(503).json({ error: "Weather data unavailable" });
     }
 
-    res.json(weather);
+    // Store the fresh data
+    await prisma.flight.update({
+      where: { id: flight.id },
+      data: {
+        destWeatherTemp: forecast.temp,
+        destWeatherDesc: forecast.description,
+        destWeatherIcon: forecast.icon,
+        destWeatherAqi: forecast.aqi,
+        destWeatherUpdatedAt: new Date(),
+      },
+    });
+
+    res.json(forecast);
   } catch (err) {
     console.error("Error fetching weather:", err);
     res.status(500).json({ error: "Failed to fetch weather" });
