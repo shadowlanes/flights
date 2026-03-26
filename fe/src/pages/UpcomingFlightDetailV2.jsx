@@ -15,6 +15,7 @@ import {
   Building2,
   CloudSun,
   Wind,
+  Car,
 } from "lucide-react";
 import { api } from "../lib/api";
 import {
@@ -280,6 +281,14 @@ export default function UpcomingFlightDetailV2() {
             <div>
               <div className="code-display text-4xl tracking-tight">{flight.departureCode}</div>
               <div className="text-sm text-muted-foreground mt-1">{dep?.city || flight.departureCode}</div>
+              {dep?.cityTravelMin != null && (
+                <div className="flex items-center gap-1 mt-1 text-[11px] text-muted-foreground/40">
+                  <Car className="w-3 h-3" strokeWidth={1.5} />
+                  ~{dep.cityTravelMin >= 60
+                    ? `${Math.floor(dep.cityTravelMin / 60)}h ${dep.cityTravelMin % 60}m`
+                    : `${dep.cityTravelMin}m`} from city
+                </div>
+              )}
             </div>
 
             {/* Center connector */}
