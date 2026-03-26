@@ -2,6 +2,7 @@ import cron from "node-cron";
 import app from "./app";
 import { updateActiveFlights } from "./services/flight-updater";
 import { archiveCompletedFlights } from "./services/archiver";
+import { updateUpcomingFlightWeather } from "./services/weather-updater";
 
 const port = Number(process.env.PORT) || 3001;
 
@@ -24,6 +25,14 @@ cron.schedule("0 */2 * * *", async () => {
         await archiveCompletedFlights();
     } catch (err) {
         console.error("Archive cron error:", err);
+    }
+    try {
+        const count = await updateUpcomingFlightWeather();
+        if (count > 0) {
+            console.log(`Updated weather for ${count} upcoming flight(s)`);
+        }
+    } catch (err) {
+        console.error("Weather update cron error:", err);
     }
 });
 
