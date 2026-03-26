@@ -444,6 +444,27 @@
 }
 
 /* ============================================
+   BOARDING PASS TEAR LINE
+   ============================================ */
+
+.boarding-pass-tear {
+    position: relative;
+    border-top: 2px dashed rgba(255, 255, 255, 0.08);
+}
+.boarding-pass-tear::before,
+.boarding-pass-tear::after {
+    content: '';
+    position: absolute;
+    top: -9px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: hsl(0, 0%, 0%);
+}
+.boarding-pass-tear::before { left: -9px; }
+.boarding-pass-tear::after { right: -9px; }
+
+/* ============================================
    LEAFLET MAP OVERRIDES
    ============================================ */
 
