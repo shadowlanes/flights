@@ -14,7 +14,7 @@ import AirlineLogo from "../components/AirlineLogo";
 import StatusBadge from "../components/StatusBadge";
 import { format } from "date-fns";
 import { Map } from "@/components/ui/map";
-import { FlightRoutes } from "@/components/ui/flight";
+import { FlightRoutes, getAirportInfo } from "@/components/ui/flight";
 
 function FlightListItem({ flight, index = 0 }) {
   const dep = flight.departure;
@@ -56,10 +56,9 @@ function RouteMap({ flights }) {
     const dep = f.departure;
     const arr = f.arrival;
     if (!dep?.latitude || !arr?.latitude) continue;
-    routes.push({
-      from: [dep.longitude, dep.latitude],
-      to: [arr.longitude, arr.latitude],
-    });
+    const fromRef = dep.iataCode && getAirportInfo(dep.iataCode) ? dep.iataCode : [dep.longitude, dep.latitude];
+    const toRef = arr.iataCode && getAirportInfo(arr.iataCode) ? arr.iataCode : [arr.longitude, arr.latitude];
+    routes.push({ from: fromRef, to: toRef });
     allLngs.push(dep.longitude, arr.longitude);
     allLats.push(dep.latitude, arr.latitude);
   }
