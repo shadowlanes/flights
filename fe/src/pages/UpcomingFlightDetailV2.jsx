@@ -24,66 +24,42 @@ import {
   formatDelayStatus,
   formatDuration,
   computeDistanceKm,
-  computeGreatCircleArc,
   computeTimezoneChange,
 } from "../lib/time";
 import { format } from "date-fns";
-import { MapContainer, TileLayer, Polyline, CircleMarker } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import { Map } from "@/components/ui/map";
+import { FlightRoute } from "@/components/ui/flight";
 
 function RouteMap({ departure, arrival }) {
   if (!departure?.latitude || !arrival?.latitude) return null;
-  const from = [departure.latitude, departure.longitude];
-  const to = [arrival.latitude, arrival.longitude];
-  const latPad = Math.abs(from[0] - to[0]) * 0.3 + 2;
-  const lonPad = Math.abs(from[1] - to[1]) * 0.3 + 2;
-  const bounds = [
-    [Math.min(from[0], to[0]) - latPad, Math.min(from[1], to[1]) - lonPad],
-    [Math.max(from[0], to[0]) + latPad, Math.max(from[1], to[1]) + lonPad],
-  ];
+  const from = [departure.longitude, departure.latitude];
+  const to = [arrival.longitude, arrival.latitude];
+  const centerLng = (from[0] + to[0]) / 2;
+  const centerLat = (from[1] + to[1]) / 2;
+  const lngSpan = Math.abs(from[0] - to[0]);
+  const latSpan = Math.abs(from[1] - to[1]);
+  const maxSpan = Math.max(lngSpan, latSpan);
+  const zoom = maxSpan > 100 ? 1.5 : maxSpan > 50 ? 2.5 : maxSpan > 20 ? 3.5 : maxSpan > 10 ? 4.5 : 5.5;
   return (
     <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 200 }}>
-      <MapContainer
-        bounds={bounds}
-        style={{ height: "100%", width: "100%", background: "#000" }}
-        zoomControl={false}
+      <Map
+        className="h-full w-full"
+        theme="dark"
+        center={[centerLng, centerLat]}
+        zoom={zoom}
+        interactive={false}
         attributionControl={false}
-        dragging={false}
-        scrollWheelZoom={false}
-        doubleClickZoom={false}
-        touchZoom={false}
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          opacity={0.5}
+        <FlightRoute
+          from={from}
+          to={to}
+          color="rgba(59,130,246,0.6)"
+          width={2}
+          showAirports
+          hoverEffect={false}
+          animate
         />
-        <Polyline
-          positions={computeGreatCircleArc(departure, arrival)}
-          pathOptions={{ color: "rgba(59,130,246,0.6)", weight: 2 }}
-        />
-        {/* Departure marker (blue) */}
-        <CircleMarker
-          center={from}
-          radius={4}
-          pathOptions={{
-            fillColor: "rgba(59,130,246,0.9)",
-            fillOpacity: 1,
-            color: "rgba(59,130,246,0.3)",
-            weight: 6,
-          }}
-        />
-        {/* Arrival marker (emerald) */}
-        <CircleMarker
-          center={to}
-          radius={4}
-          pathOptions={{
-            fillColor: "rgba(52,211,153,0.9)",
-            fillOpacity: 1,
-            color: "rgba(52,211,153,0.3)",
-            weight: 6,
-          }}
-        />
-      </MapContainer>
+      </Map>
     </div>
   );
 }

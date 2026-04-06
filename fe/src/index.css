@@ -55,6 +55,12 @@
         --ring: 0 0% 100%;
         --radius: 0.75rem;
     }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+    }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+    }
 }
 
 @layer base {
@@ -463,26 +469,6 @@
 }
 .boarding-pass-tear::before { left: -9px; }
 .boarding-pass-tear::after { right: -9px; }
-
-/* ============================================
-   LEAFLET MAP OVERRIDES
-   ============================================ */
-
-.leaflet-popup-content-wrapper {
-    background: hsl(0, 0%, 8%) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
-}
-.leaflet-popup-content {
-    margin: 8px 12px !important;
-    color: rgba(255,255,255,0.7) !important;
-    font-size: 12px !important;
-}
-.leaflet-popup-tip {
-    background: hsl(0, 0%, 8%) !important;
-    border: 1px solid rgba(255,255,255,0.08) !important;
-}
 
 /* ============================================
    LANDING PAGE ANIMATIONS

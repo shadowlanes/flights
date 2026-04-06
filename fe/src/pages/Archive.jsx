@@ -13,9 +13,8 @@ import { api } from "../lib/api";
 import AirlineLogo from "../components/AirlineLogo";
 import StatusBadge from "../components/StatusBadge";
 import { format } from "date-fns";
-import { computeGreatCircleArc } from "../lib/time";
-import { MapContainer, TileLayer, Polyline, CircleMarker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import { Map } from "@/components/ui/map";
+import { FlightRoutes } from "@/components/ui/flight";
 
 function FlightListItem({ flight, index = 0 }) {
   const dep = flight.departure;
@@ -49,121 +48,48 @@ function FlightListItem({ flight, index = 0 }) {
 }
 
 function RouteMap({ flights }) {
-  // Collect unique airports and routes
-  const airports = new Map();
   const routes = [];
+  const allLngs = [];
+  const allLats = [];
 
   for (const f of flights) {
     const dep = f.departure;
     const arr = f.arrival;
-    if (!dep || !arr) continue;
-
-    if (dep.latitude && dep.longitude) {
-      const key = dep.iataCode;
-      if (!airports.has(key)) {
-        airports.set(key, { ...dep, count: 0, isDep: false, isArr: false });
-      }
-      airports.get(key).count++;
-      airports.get(key).isDep = true;
-    }
-    if (arr.latitude && arr.longitude) {
-      const key = arr.iataCode;
-      if (!airports.has(key)) {
-        airports.set(key, { ...arr, count: 0, isDep: false, isArr: false });
-      }
-      airports.get(key).count++;
-      airports.get(key).isArr = true;
-    }
-
-    if (dep.latitude && dep.longitude && arr.latitude && arr.longitude) {
-      routes.push({
-        from: [dep.latitude, dep.longitude],
-        to: [arr.latitude, arr.longitude],
-        dep,
-        arr,
-        flight: f,
-      });
-    }
+    if (!dep?.latitude || !arr?.latitude) continue;
+    routes.push({
+      from: [dep.longitude, dep.latitude],
+      to: [arr.longitude, arr.latitude],
+    });
+    allLngs.push(dep.longitude, arr.longitude);
+    allLats.push(dep.latitude, arr.latitude);
   }
 
   if (routes.length === 0) return null;
 
-  // Compute bounds
-  const allPoints = routes.flatMap((r) => [r.from, r.to]);
-  const lats = allPoints.map((p) => p[0]);
-  const lons = allPoints.map((p) => p[1]);
-  const bounds = [
-    [Math.min(...lats) - 5, Math.min(...lons) - 10],
-    [Math.max(...lats) + 5, Math.max(...lons) + 10],
-  ];
+  const centerLng = (Math.min(...allLngs) + Math.max(...allLngs)) / 2;
+  const centerLat = (Math.min(...allLats) + Math.max(...allLats)) / 2;
+  const lngSpan = Math.max(...allLngs) - Math.min(...allLngs);
+  const latSpan = Math.max(...allLats) - Math.min(...allLats);
+  const maxSpan = Math.max(lngSpan, latSpan);
+  const zoom = maxSpan > 200 ? 0.8 : maxSpan > 100 ? 1.5 : maxSpan > 50 ? 2.5 : maxSpan > 20 ? 3.5 : 4.5;
 
   return (
     <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 400 }}>
-      <MapContainer
-        bounds={bounds}
-        style={{ height: "100%", width: "100%", background: "hsl(225, 25%, 6%)" }}
-        zoomControl={false}
+      <Map
+        className="h-full w-full"
+        theme="dark"
+        center={[centerLng, centerLat]}
+        zoom={zoom}
         attributionControl={false}
       >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          opacity={0.6}
+        <FlightRoutes
+          routes={routes}
+          color="rgba(59, 130, 246, 0.4)"
+          width={1.5}
+          showAirports
+          showLabel
         />
-
-        {/* Flight routes */}
-        {routes.map((route, i) => (
-          <Polyline
-            key={i}
-            positions={computeGreatCircleArc(route.dep, route.arr, 30)}
-            pathOptions={{
-              color: "rgba(59, 130, 246, 0.4)",
-              weight: 1.5,
-            }}
-          >
-            <Popup>
-              <span style={{ color: "#94a3b8", fontSize: 12 }}>
-                {route.flight.flightNumber} — {format(new Date(route.flight.date), "MMM d, yyyy")}
-              </span>
-            </Popup>
-          </Polyline>
-        ))}
-
-        {/* Airport markers: blue=departure, emerald=arrival, blend=both */}
-        {Array.from(airports.values()).map((apt) => {
-          const isBoth = apt.isDep && apt.isArr;
-          const fillColor = isBoth
-            ? "rgba(148, 163, 184, 0.8)"
-            : apt.isArr
-              ? "rgba(52, 211, 153, 0.7)"
-              : "rgba(59, 130, 246, 0.7)";
-          const strokeColor = isBoth
-            ? "rgba(148, 163, 184, 0.3)"
-            : apt.isArr
-              ? "rgba(52, 211, 153, 0.3)"
-              : "rgba(59, 130, 246, 0.3)";
-          return (
-          <CircleMarker
-            key={apt.iataCode}
-            center={[apt.latitude, apt.longitude]}
-            radius={4}
-            pathOptions={{
-              fillColor,
-              fillOpacity: 1,
-              color: strokeColor,
-              weight: 6,
-            }}
-          >
-            <Popup>
-              <div style={{ color: "#94a3b8", fontSize: 12 }}>
-                <strong>{apt.iataCode}</strong> — {apt.city}
-                <br />
-                {apt.count} flight{apt.count !== 1 ? "s" : ""}
-              </div>
-            </Popup>
-          </CircleMarker>
-          );
-        })}
-      </MapContainer>
+      </Map>
     </div>
   );
 }
