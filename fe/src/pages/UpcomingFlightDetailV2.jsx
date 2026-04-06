@@ -27,7 +27,7 @@ import {
   computeTimezoneChange,
 } from "../lib/time";
 import { format } from "date-fns";
-import { Map } from "@/components/ui/map";
+import { Map, MapControls } from "@/components/ui/map";
 import { FlightRoute } from "@/components/ui/flight";
 
 function RouteMap({ departure, arrival }) {
@@ -38,16 +38,15 @@ function RouteMap({ departure, arrival }) {
   const centerLat = (from[1] + to[1]) / 2;
   const lngSpan = Math.abs(from[0] - to[0]);
   const latSpan = Math.abs(from[1] - to[1]);
-  const maxSpan = Math.max(lngSpan, latSpan);
-  const zoom = maxSpan > 100 ? 1.5 : maxSpan > 50 ? 2.5 : maxSpan > 20 ? 3.5 : maxSpan > 10 ? 4.5 : 5.5;
+  const maxSpan = Math.max(lngSpan, latSpan, 1);
+  const zoom = Math.min(Math.log2(360 / maxSpan) - 0.7, 4);
   return (
-    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 200 }}>
+    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 280 }}>
       <Map
         className="h-full w-full"
         theme="dark"
         center={[centerLng, centerLat]}
         zoom={zoom}
-        interactive={false}
         attributionControl={false}
       >
         <FlightRoute
@@ -59,6 +58,7 @@ function RouteMap({ departure, arrival }) {
           hoverEffect={false}
           animate
         />
+        <MapControls showZoom />
       </Map>
     </div>
   );
