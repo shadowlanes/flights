@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Link } from "react-router";
 import {
   Plane,
@@ -8,12 +8,71 @@ import {
 import { api } from "../lib/api";
 import FlightCard from "../components/FlightCard";
 import FlightStats from "../components/FlightStats";
+import { Map } from "@/components/ui/map";
+import { FlightRoutes, getAirportInfo } from "@/components/ui/flight";
+
+function GlobeMap({ flights }) {
+  const { routes, center, zoom } = useMemo(() => {
+    const routes = [];
+    const allLngs = [];
+    const allLats = [];
+
+    for (const f of flights) {
+      const dep = f.departure;
+      const arr = f.arrival;
+      if (!dep?.latitude || !arr?.latitude) continue;
+      const fromRef = dep.iataCode && getAirportInfo(dep.iataCode) ? dep.iataCode : [dep.longitude, dep.latitude];
+      const toRef = arr.iataCode && getAirportInfo(arr.iataCode) ? arr.iataCode : [arr.longitude, arr.latitude];
+      routes.push({ from: fromRef, to: toRef });
+      allLngs.push(dep.longitude, arr.longitude);
+      allLats.push(dep.latitude, arr.latitude);
+    }
+
+    if (routes.length === 0) return { routes: [], center: [0, 20], zoom: 1.5 };
+
+    const centerLng = (Math.min(...allLngs) + Math.max(...allLngs)) / 2;
+    const centerLat = (Math.min(...allLats) + Math.max(...allLats)) / 2;
+    const lngSpan = Math.max(...allLngs) - Math.min(...allLngs);
+    const latSpan = Math.max(...allLats) - Math.min(...allLats);
+    const maxSpan = Math.max(lngSpan, latSpan);
+    // Cap zoom low enough so globe curvature is always visible
+    const rawZoom = maxSpan > 200 ? 0.8 : maxSpan > 100 ? 1.2 : maxSpan > 50 ? 1.5 : 1.8;
+    const zoom = Math.min(rawZoom, 1.8);
+
+    return { routes, center: [centerLng, centerLat], zoom };
+  }, [flights]);
+
+  if (routes.length === 0) return null;
+
+  return (
+    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 450 }}>
+      <Map
+        className="h-full w-full"
+        theme="dark"
+        center={center}
+        zoom={zoom}
+        projection={{ type: "globe" }}
+        attributionControl={false}
+      >
+        <FlightRoutes
+          routes={routes}
+          color="rgba(59, 130, 246, 0.4)"
+          width={1.5}
+          showAirports
+          showLabel
+        />
+      </Map>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const [flights, setFlights] = useState([]);
+  const [archivedFlights, setArchivedFlights] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [archiveLoading, setArchiveLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchFlights = useCallback(async () => {
@@ -39,16 +98,35 @@ export default function Dashboard() {
     }
   }, []);
 
+  const fetchArchive = useCallback(async () => {
+    try {
+      const data = await api.get("/api/flights/archive");
+      setArchivedFlights(data);
+    } catch {
+      // Archive failing is non-critical for dashboard
+    } finally {
+      setArchiveLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchFlights();
     fetchStats();
+    fetchArchive();
     const interval = setInterval(fetchFlights, 60000);
     return () => clearInterval(interval);
-  }, [fetchFlights, fetchStats]);
+  }, [fetchFlights, fetchStats, fetchArchive]);
+
+  const allFlightsForGlobe = useMemo(
+    () => [...archivedFlights, ...flights],
+    [archivedFlights, flights]
+  );
 
   if (loading) {
     return (
       <div className="space-y-8">
+        <div className="skeleton rounded-2xl" style={{ height: 450 }} />
+        <FlightStats loading={true} />
         <div className="space-y-4">
           {[1, 2].map((i) => (
             <div key={i} className="card-flat rounded-2xl p-5">
@@ -67,7 +145,6 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-        <FlightStats loading={true} />
       </div>
     );
   }
@@ -88,10 +165,14 @@ export default function Dashboard() {
     );
   }
 
-  // No upcoming flights — show stats as hero + add button
+  // No upcoming flights — show globe + stats + add button
   if (flights.length === 0) {
     return (
       <div className="space-y-10">
+        {!archiveLoading && allFlightsForGlobe.length > 0 && (
+          <GlobeMap flights={allFlightsForGlobe} />
+        )}
+
         {(stats?.totalFlights > 0 || statsLoading) && (
           <div className="space-y-4">
             <h2 className="heading-lg text-muted-foreground/70">Your Journey</h2>
@@ -119,9 +200,20 @@ export default function Dashboard() {
     );
   }
 
-  // Upcoming flights + stats below
+  // Globe + stats + upcoming flights
   return (
     <div className="space-y-10">
+      {!archiveLoading && allFlightsForGlobe.length > 0 && (
+        <GlobeMap flights={allFlightsForGlobe} />
+      )}
+
+      {(stats?.totalFlights > 0 || statsLoading) && (
+        <div className="space-y-4">
+          <h2 className="heading-lg text-muted-foreground/70">Your Journey</h2>
+          <FlightStats stats={stats} loading={statsLoading} />
+        </div>
+      )}
+
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="heading-xl">Upcoming Flights</h1>
@@ -136,14 +228,6 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-
-      {(stats?.totalFlights > 0 || statsLoading) && (
-        <div className="space-y-4">
-          <div className="divider-glow" />
-          <h2 className="heading-lg text-muted-foreground/70">Your Journey</h2>
-          <FlightStats stats={stats} loading={statsLoading} />
-        </div>
-      )}
     </div>
   );
 }

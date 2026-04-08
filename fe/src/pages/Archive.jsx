@@ -2,19 +2,12 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import {
   Archive,
-  Plane,
-  ArrowRight,
-  Clock,
-  MapIcon,
-  List,
   AlertCircle,
 } from "lucide-react";
 import { api } from "../lib/api";
 import AirlineLogo from "../components/AirlineLogo";
 import StatusBadge from "../components/StatusBadge";
 import { format } from "date-fns";
-import { Map } from "@/components/ui/map";
-import { FlightRoutes, getAirportInfo } from "@/components/ui/flight";
 
 function FlightListItem({ flight, index = 0 }) {
   const dep = flight.departure;
@@ -47,57 +40,10 @@ function FlightListItem({ flight, index = 0 }) {
   );
 }
 
-function RouteMap({ flights }) {
-  const routes = [];
-  const allLngs = [];
-  const allLats = [];
-
-  for (const f of flights) {
-    const dep = f.departure;
-    const arr = f.arrival;
-    if (!dep?.latitude || !arr?.latitude) continue;
-    const fromRef = dep.iataCode && getAirportInfo(dep.iataCode) ? dep.iataCode : [dep.longitude, dep.latitude];
-    const toRef = arr.iataCode && getAirportInfo(arr.iataCode) ? arr.iataCode : [arr.longitude, arr.latitude];
-    routes.push({ from: fromRef, to: toRef });
-    allLngs.push(dep.longitude, arr.longitude);
-    allLats.push(dep.latitude, arr.latitude);
-  }
-
-  if (routes.length === 0) return null;
-
-  const centerLng = (Math.min(...allLngs) + Math.max(...allLngs)) / 2;
-  const centerLat = (Math.min(...allLats) + Math.max(...allLats)) / 2;
-  const lngSpan = Math.max(...allLngs) - Math.min(...allLngs);
-  const latSpan = Math.max(...allLats) - Math.min(...allLats);
-  const maxSpan = Math.max(lngSpan, latSpan);
-  const zoom = maxSpan > 200 ? 0.8 : maxSpan > 100 ? 1.5 : maxSpan > 50 ? 2.5 : maxSpan > 20 ? 3.5 : 4.5;
-
-  return (
-    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 400 }}>
-      <Map
-        className="h-full w-full"
-        theme="dark"
-        center={[centerLng, centerLat]}
-        zoom={zoom}
-        attributionControl={false}
-      >
-        <FlightRoutes
-          routes={routes}
-          color="rgba(59, 130, 246, 0.4)"
-          width={1.5}
-          showAirports
-          showLabel
-        />
-      </Map>
-    </div>
-  );
-}
-
 export default function ArchivePage() {
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState("list"); // "list" | "map"
 
   useEffect(() => {
     async function fetch() {
@@ -158,35 +104,7 @@ export default function ArchivePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="heading-xl">Past Flights</h1>
-
-        {/* View toggle */}
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-white/[0.04] border border-white/[0.06]">
-          <button
-            onClick={() => setView("list")}
-            className={`p-1.5 rounded-md transition-all cursor-pointer ${
-              view === "list"
-                ? "bg-white/[0.08] text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <List className="w-4 h-4" strokeWidth={1.5} />
-          </button>
-          <button
-            onClick={() => setView("map")}
-            className={`p-1.5 rounded-md transition-all cursor-pointer ${
-              view === "map"
-                ? "bg-white/[0.08] text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <MapIcon className="w-4 h-4" strokeWidth={1.5} />
-          </button>
-        </div>
-      </div>
-
-      {view === "map" && <RouteMap flights={flights} />}
+      <h1 className="heading-xl">Past Flights</h1>
 
       <div className="space-y-2">
         <div className="label-caps">
