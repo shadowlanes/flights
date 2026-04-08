@@ -1,17 +1,23 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Link } from "react-router";
 import {
-  Plane,
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
 import { api } from "../lib/api";
 import FlightCard from "../components/FlightCard";
-import FlightStats from "../components/FlightStats";
 import { Map } from "@/components/ui/map";
 import { FlightRoutes, getAirportInfo } from "@/components/ui/flight";
 
-function GlobeMap({ flights }) {
+function formatDistance(km) {
+  if (km >= 1000) return `${(km / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return km.toLocaleString();
+}
+
+function formatDuration(totalMin) {
+  return `${Math.floor(totalMin / 60).toLocaleString()}h`;
+}
+
+function GlobeHero({ flights, stats, statsLoading }) {
   const { routes, center, zoom } = useMemo(() => {
     const routes = [];
     const allLngs = [];
@@ -35,17 +41,24 @@ function GlobeMap({ flights }) {
     const lngSpan = Math.max(...allLngs) - Math.min(...allLngs);
     const latSpan = Math.max(...allLats) - Math.min(...allLats);
     const maxSpan = Math.max(lngSpan, latSpan);
-    // Cap zoom low enough so globe curvature is always visible
-    const rawZoom = maxSpan > 200 ? 0.8 : maxSpan > 100 ? 1.2 : maxSpan > 50 ? 1.5 : 1.8;
-    const zoom = Math.min(rawZoom, 1.8);
+    const rawZoom = maxSpan > 200 ? 1.5 : maxSpan > 100 ? 1.8 : maxSpan > 50 ? 2.2 : 2.5;
+    const zoom = Math.min(rawZoom, 2.5);
 
     return { routes, center: [centerLng, centerLat], zoom };
   }, [flights]);
 
   if (routes.length === 0) return null;
 
+  const statItems = stats ? [
+    { label: "Flights", value: stats.totalFlights.toLocaleString() },
+    { label: "Distance", value: `${formatDistance(stats.totalDistanceKm)} km` },
+    { label: "Time in Air", value: formatDuration(stats.totalDurationMin) },
+    { label: "Countries", value: stats.uniqueCountries.toString() },
+    { label: "Airports", value: stats.uniqueAirports.toString() },
+  ] : [];
+
   return (
-    <div className="card-flat rounded-2xl overflow-hidden" style={{ height: 450 }}>
+    <div className="relative overflow-hidden rounded-2xl" style={{ height: 650 }}>
       <Map
         className="h-full w-full"
         theme="dark"
@@ -62,6 +75,22 @@ function GlobeMap({ flights }) {
           showLabel
         />
       </Map>
+
+      {/* Stats overlay at bottom */}
+      {!statsLoading && stats && stats.totalFlights > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 pointer-events-none">
+          <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-16 pb-5 px-6">
+            <div className="flex items-center justify-center gap-6 text-sm">
+              {statItems.map((item) => (
+                <div key={item.label} className="flex items-center gap-1.5">
+                  <span className="font-semibold text-white">{item.value}</span>
+                  <span className="text-white/50 text-xs uppercase tracking-wider">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -125,26 +154,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div className="skeleton rounded-2xl" style={{ height: 450 }} />
-        <FlightStats loading={true} />
-        <div className="space-y-4">
-          {[1, 2].map((i) => (
-            <div key={i} className="card-flat rounded-2xl p-5">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="skeleton w-9 h-9 rounded-lg" />
-                <div className="space-y-2">
-                  <div className="skeleton h-4 w-20" />
-                  <div className="skeleton h-3 w-28" />
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="skeleton h-8 w-14" />
-                <div className="flex-1 h-px bg-white/[0.04]" />
-                <div className="skeleton h-8 w-14" />
-              </div>
-            </div>
-          ))}
-        </div>
+        <div className="skeleton rounded-2xl" style={{ height: 650 }} />
       </div>
     );
   }
@@ -165,69 +175,31 @@ export default function Dashboard() {
     );
   }
 
-  // No upcoming flights — show globe + stats + add button
-  if (flights.length === 0) {
-    return (
-      <div className="space-y-10">
-        {!archiveLoading && allFlightsForGlobe.length > 0 && (
-          <GlobeMap flights={allFlightsForGlobe} />
-        )}
-
-        {(stats?.totalFlights > 0 || statsLoading) && (
-          <div className="space-y-4">
-            <h2 className="heading-lg text-muted-foreground/70">Your Journey</h2>
-            <FlightStats stats={stats} loading={statsLoading} />
-          </div>
-        )}
-
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="card-flat rounded-2xl p-10 text-center max-w-md space-y-5">
-            <div className="w-14 h-14 mx-auto rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center animate-float">
-              <Plane className="w-7 h-7 text-muted-foreground/40" strokeWidth={1.5} />
-            </div>
-            <div>
-              <h2 className="heading-lg mb-2">No upcoming flights</h2>
-              <p className="text-sm text-muted-foreground">
-                Add a flight to start tracking
-              </p>
-            </div>
-            <Link to="/flights/add" className="btn-glass btn-primary px-5 py-2.5">
-              Add a flight
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Globe + stats + upcoming flights
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
+      {flights.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="heading-xl">Upcoming Flights</h1>
+            <span className="label-caps">
+              {flights.length} flight{flights.length !== 1 ? "s" : ""}
+            </span>
+          </div>
+          <div className="space-y-4">
+            {flights.map((flight, i) => (
+              <FlightCard key={flight.id} flight={flight} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {!archiveLoading && allFlightsForGlobe.length > 0 && (
-        <GlobeMap flights={allFlightsForGlobe} />
+        <GlobeHero
+          flights={allFlightsForGlobe}
+          stats={stats}
+          statsLoading={statsLoading}
+        />
       )}
-
-      {(stats?.totalFlights > 0 || statsLoading) && (
-        <div className="space-y-4">
-          <h2 className="heading-lg text-muted-foreground/70">Your Journey</h2>
-          <FlightStats stats={stats} loading={statsLoading} />
-        </div>
-      )}
-
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="heading-xl">Upcoming Flights</h1>
-          <span className="label-caps">
-            {flights.length} flight{flights.length !== 1 ? "s" : ""}
-          </span>
-        </div>
-
-        <div className="space-y-4">
-          {flights.map((flight, i) => (
-            <FlightCard key={flight.id} flight={flight} index={i} />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
